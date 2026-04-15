@@ -8,6 +8,8 @@ import os
 from datetime import datetime
 import random
 import re
+import pytz 
+from pytz import timezone
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here-12345'
@@ -51,6 +53,30 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+
+# Nepali Timezone Helper Functions
+NEPAL_TZ = timezone('Asia/Kathmandu')
+
+def get_nepal_time():
+    """Get current time in Nepal Timezone (NPT)"""
+    return datetime.now(NEPAL_TZ)
+
+def convert_to_nepal_time(dt):
+    """Convert UTC datetime to Nepal Timezone"""
+    if dt is None:
+        return None
+    # If datetime is naive (no timezone), assume it's UTC
+    if dt.tzinfo is None:
+        dt = pytz.UTC.localize(dt)
+    return dt.astimezone(NEPAL_TZ)
+
+def format_nepal_time(dt, format_str='%Y-%m-%d %H:%M:%S'):
+    """Format datetime in Nepal Timezone"""
+    if dt is None:
+        return 'N/A'
+    nepal_dt = convert_to_nepal_time(dt)
+    return nepal_dt.strftime(format_str)
+
 # Models
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -59,7 +85,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(200), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
     is_verified = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: get_nepal_time())
     orders = db.relationship('Order', backref='user', lazy=True)
 
 class Product(db.Model):
@@ -72,7 +98,7 @@ class Product(db.Model):
     category = db.Column(db.String(50), nullable=False)
     image = db.Column(db.String(200), nullable=True)
     stock = db.Column(db.Integer, default=10)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # This should already exist
+    created_at = db.Column(db.DateTime, default=lambda: get_nepal_time())
 
 class Cart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -88,7 +114,7 @@ class Order(db.Model):
     status = db.Column(db.String(20), default='pending')
     shipping_address = db.Column(db.Text, nullable=True)
     phone = db.Column(db.String(20), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: get_nepal_time())
     items = db.relationship('OrderItem', backref='order', lazy=True, cascade='all, delete-orphan')
 
 class OrderItem(db.Model):
@@ -103,9 +129,12 @@ class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    rating = db.Column(db.Integer, nullable=False)  # 1-5 stars
+    rating = db.Column(db.Integer, nullable=False)
     comment = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: get_nepal_time())
+    
+    product = db.relationship('Product', backref='reviews')
+    user = db.relationship('User', backref='reviews')
     
     # Relationships
     product = db.relationship('Product', backref='reviews')
@@ -148,7 +177,7 @@ def send_otp_email(email, otp):
                     <div class="otp-code"><strong>{otp}</strong></div>
                     <p>This OTP is valid for 10 minutes.</p>
                 </div>
-                <div class="footer"><p>&copy; 2024 Dhami Electronics. All rights reserved.</p></div>
+                <div class="footer"><p>&copy; 2026 Dhami Electronics. All rights reserved.</p></div>
             </div>
         </body>
         </html>
@@ -177,6 +206,12 @@ def send_order_notification_to_admin(order, user, order_items, total_amount, shi
         subtotal = total_amount - calculate_shipping(total_amount)
         shipping = calculate_shipping(subtotal)
         
+        # Create shipping display text
+        if shipping == 0:
+            shipping_display = '<span class="shipping-free"><i class="fas fa-gift"></i> FREE</span>'
+        else:
+            shipping_display = f'<span class="shipping-fee">NPR {shipping:.2f}</span>'
+        
         msg = Message(
             f'🛍️ NEW ORDER #{order.id} - Dhami Electronics', 
             recipients=[ADMIN_EMAIL]
@@ -196,6 +231,8 @@ def send_order_notification_to_admin(order, user, order_items, total_amount, shi
                 td {{ padding: 10px; }}
                 .total {{ font-size: 18px; font-weight: bold; text-align: right; padding: 15px; background-color: #f8f9fa; }}
                 .status {{ display: inline-block; padding: 5px 10px; background-color: #ffc107; color: #000; border-radius: 5px; font-weight: bold; }}
+                .shipping-free {{ color: #10b981; font-weight: bold; }}
+                .shipping-fee {{ color: #f59e0b; font-weight: bold; }}
             </style>
         </head>
         <body>
@@ -216,7 +253,7 @@ def send_order_notification_to_admin(order, user, order_items, total_amount, shi
                     </div>
                     
                     <h3>📦 Order Items:</h3>
-                    <table>
+                    <table style="width: 100%; border-collapse: collapse;">
                         <thead>
                             <tr><th>Product</th><th>Quantity</th><th>Unit Price</th><th>Total</th></tr>
                         </thead>
@@ -230,7 +267,7 @@ def send_order_notification_to_admin(order, user, order_items, total_amount, shi
                         </div>
                         <div style="display: flex; justify-content: space-between; padding: 8px 0;">
                             <span>Shipping Fee:</span>
-                            <span>NPR {shipping:.2f}</span>
+                            {shipping_display}
                         </div>
                         <hr>
                         <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 18px; font-weight: bold;">
@@ -239,11 +276,7 @@ def send_order_notification_to_admin(order, user, order_items, total_amount, shi
                         </div>
                     </div>
                     
-                    <div style="text-align: center; margin-top: 30px;">
-                        <a href="http://127.0.0.1:5000/admin/orders" style="background-color: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
-                            📊 View in Admin Panel
-                        </a>
-                    </div>
+            
                 </div>
             </div>
         </body>
@@ -255,6 +288,7 @@ def send_order_notification_to_admin(order, user, order_items, total_amount, shi
     except Exception as e:
         print(f"Error sending order notification to admin: {str(e)}")
         return False
+
 
 def send_order_confirmation_to_customer(order, user, order_items, total_amount, shipping_address, phone):
     """Send order confirmation email to customer"""
@@ -269,6 +303,29 @@ def send_order_confirmation_to_customer(order, user, order_items, total_amount, 
                 <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {(item.price * item.quantity):.2f}</td>
             </tr>
             """
+        
+        subtotal = total_amount - calculate_shipping(total_amount)
+        shipping = calculate_shipping(subtotal)
+        
+        # Create shipping display text
+        if shipping == 0:
+            shipping_display = '<span class="shipping-free"><i class="fas fa-gift"></i> FREE Shipping</span>'
+            free_shipping_message = '''
+            <div style="background-color: #d4edda; padding: 12px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                <i class="fas fa-truck" style="color: #155724;"></i>
+                <strong style="color: #155724;">Free Shipping Applied!</strong>
+                <p style="margin: 5px 0 0 0; color: #155724; font-size: 12px;">You've qualified for free shipping on this order.</p>
+            </div>
+            '''
+        else:
+            shipping_display = f'<span class="shipping-fee">NPR {shipping:.2f}</span>'
+            free_shipping_message = '''
+            <div style="background-color: #fff3cd; padding: 12px; border-radius: 8px; margin: 20px 0; text-align: center;">
+                <i class="fas fa-info-circle" style="color: #856404;"></i>
+                <strong style="color: #856404;">Shipping Information</strong>
+                <p style="margin: 5px 0 0 0; color: #856404; font-size: 12px;">A flat shipping fee of NPR 150 applies to orders under NPR 5000.</p>
+            </div>
+            '''
         
         msg = Message(
             f'✅ Order Confirmation #{order.id} - Dhami Electronics', 
@@ -292,6 +349,9 @@ def send_order_confirmation_to_customer(order, user, order_items, total_amount, 
                 .total {{ font-size: 18px; font-weight: bold; text-align: right; padding: 15px; background-color: #f8f9fa; }}
                 .button {{ display: inline-block; background-color: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px; }}
                 .footer {{ background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 12px; }}
+                .shipping-free {{ color: #10b981; font-weight: bold; }}
+                .shipping-fee {{ color: #f59e0b; font-weight: bold; }}
+                .price-breakdown {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
             </style>
         </head>
         <body>
@@ -311,7 +371,7 @@ def send_order_confirmation_to_customer(order, user, order_items, total_amount, 
                     </div>
                     
                     <h3>📦 Order Items</h3>
-                    <table>
+                    <table style="width: 100%; border-collapse: collapse;">
                         <thead>
                             <tr>
                                 <th>Product</th>
@@ -325,13 +385,25 @@ def send_order_confirmation_to_customer(order, user, order_items, total_amount, 
                         </tbody>
                     </table>
                     
-                    <div class="total">
-                        Total Amount: NPR {total_amount:.2f}
+                    <!-- Price Breakdown -->
+                    <div class="price-breakdown">
+                        <h4 style="margin-bottom: 15px; color: #2c3e50;">💰 Price Breakdown</h4>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span>Subtotal:</span>
+                            <span>NPR {subtotal:.2f}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span>Shipping Fee:</span>
+                            {shipping_display}
+                        </div>
+                        <div style="border-top: 1px solid #dee2e6; margin: 10px 0;"></div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 18px; font-weight: bold;">
+                            <span>Grand Total:</span>
+                            <span style="color: #28a745;">NPR {total_amount:.2f}</span>
+                        </div>
                     </div>
                     
-                    <div style="text-align: center; margin-top: 30px;">
-                        <a href="http://127.0.0.1:5000/orders" class="button" style="color: white;">📱 Track Your Order</a>
-                    </div>
+                    {free_shipping_message}
                     
                     <p style="margin-top: 20px; color: #666; text-align: center;">
                         Your order will be delivered within 3-5 business days.<br>
@@ -340,7 +412,7 @@ def send_order_confirmation_to_customer(order, user, order_items, total_amount, 
                 </div>
                 
                 <div class="footer">
-                    <p>&copy; 2024 Dhami Electronics. All rights reserved.</p>
+                    <p>&copy; 2026 Dhami Electronics. All rights reserved.</p>
                     <p>This is an automated message, please do not reply.</p>
                 </div>
             </div>
@@ -818,9 +890,11 @@ def update_order_status(order_id):
             # Prepare order items for email
             items_html = ""
             for item in order.items:
+                # Check if product exists (handle deleted products)
+                product_name = item.product.name if item.product else "Product Unavailable"
                 items_html += f"""
                 <tr>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{item.product.name}</td>
+                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{product_name}</td>
                     <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">{item.quantity}</td>
                     <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {item.price:.2f}</td>
                     <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {(item.price * item.quantity):.2f}</td>
@@ -854,9 +928,8 @@ def update_order_status(order_id):
                     'color': '#dc3545',
                     'icon': '❌',
                     'title': 'Order Cancelled',
-                    'message': 'We regret to inform you that your order has been cancelled due to technical issues. We sincerely apologize for any inconvenience caused.',
-                    'additional_info': 'Please contact our support team at support@dhamielectronics.com or call us at +977-XXX-XXXX for further assistance. Your payment will be refunded within 3-5 business days.',
-                    'action_needed': 'Contact Support'
+                    'message': 'We regret to inform you that your order has been cancelled. We sincerely apologize for any inconvenience caused.',
+                    'additional_info': 'Please contact our support team for further assistance. Your payment will be refunded within 3-5 business days.'
                 },
                 'pending': {
                     'color': '#ffc107',
@@ -869,21 +942,28 @@ def update_order_status(order_id):
             
             content = status_content.get(new_status, status_content['pending'])
             
-            # For cancelled orders, add special message
-            if new_status == 'cancelled':
-                customer_support = """
-                <div style="background-color: #f8d7da; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc3545;">
-                    <strong style="color: #721c24;">📞 Need Assistance?</strong><br>
-                    <span style="color: #721c24;">Email: <a href="mailto:support@dhamielectronics.com" style="color: #721c24;">support@dhamielectronics.com</a></span><br>
-                    <span style="color: #721c24;">Phone: +977-XXX-XXXX</span><br>
-                    <span style="color: #721c24;">Working Hours: 10:00 AM - 6:00 PM (Sun - Fri)</span>
-                </div>
-                """
-            else:
-                customer_support = ""
+            # Create customer support section (shown for ALL order statuses)
+            customer_support = f'''
+            <div style="background-color: #f8f7da; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #E66239;">
+                <strong style="color: #E66239;">📞 Need Assistance?</strong><br>
+                <span style="color: #333;">Email: <a href="mailto:support@dhamielectronics.com" style="color: #E66239;">support@dhamielectronics.com</a></span><br>
+                <span style="color: #333;">Phone: +977-9866109958</span><br>
+                <span style="color: #333;">Working Hours: 10:00 AM - 6:00 PM (Sun - Fri)</span>
+            </div>
+            '''
             
             # Create status badge HTML
             status_badge = f'<span style="display: inline-block; padding: 8px 16px; background-color: {content["color"]}; color: white; border-radius: 50px; font-weight: bold;">{new_status.upper()}</span>'
+            
+            # Calculate shipping info for email
+            subtotal = order.total_amount - calculate_shipping(order.total_amount)
+            shipping = calculate_shipping(subtotal)
+            
+            # Create shipping display text
+            if shipping == 0:
+                shipping_display = '<span style="color: #10b981; font-weight: bold;"><i class="fas fa-gift"></i> FREE</span>'
+            else:
+                shipping_display = f'<span style="color: #f59e0b; font-weight: bold;">NPR {shipping:.2f}</span>'
             
             msg = Message(
                 f'Order #{order.id} Status Update - Dhami Electronics', 
@@ -908,7 +988,7 @@ def update_order_status(order_id):
                     .total {{ font-size: 18px; font-weight: bold; text-align: right; padding: 15px; background-color: #f8f9fa; }}
                     .button {{ display: inline-block; background-color: {content["color"]}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px; }}
                     .footer {{ background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 12px; }}
-                    .track-link {{ color: {content["color"]}; text-decoration: none; font-weight: bold; }}
+                    .price-breakdown {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
                 </style>
             </head>
             <body>
@@ -933,7 +1013,7 @@ def update_order_status(order_id):
                         </div>
                         
                         <h3>📦 Order Items</h3>
-                        <table>
+                        <table style="width: 100%; border-collapse: collapse;">
                             <thead>
                                 <tr>
                                     <th>Product</th>
@@ -947,35 +1027,35 @@ def update_order_status(order_id):
                             </tbody>
                         </table>
                         
-                        <div class="total">
-                            Total Amount: NPR {order.total_amount:.2f}
-                        </div>
-                        
-                        <div style="text-align: center; margin-top: 30px;">
-                            <a href="http://127.0.0.1:5000/orders" class="button" style="color: white;">📱 Track Your Order</a>
+                        <!-- Price Breakdown -->
+                        <div class="price-breakdown">
+                            <h4 style="margin-bottom: 15px; color: #2c3e50;">💰 Price Breakdown</h4>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                <span>Subtotal:</span>
+                                <span>NPR {subtotal:.2f}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                                <span>Shipping Fee:</span>
+                                {shipping_display}
+                            </div>
+                            <div style="border-top: 1px solid #dee2e6; margin: 10px 0;"></div>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 18px; font-weight: bold;">
+                                <span>Total Amount:</span>
+                                <span style="color: {content["color"]};">NPR {order.total_amount:.2f}</span>
+                            </div>
                         </div>
                         
                         <p style="margin-top: 20px; color: #666; text-align: center;">
                             {content["additional_info"]}
                         </p>
                         
+                        <!-- Customer Support Section - Shows for ALL order statuses -->
                         {customer_support}
-                        
-                        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 8px; margin-top: 20px;">
-                            <p style="margin: 0; color: #2e7d32;">
-                                <strong>💡 Need Help?</strong><br>
-                                Our customer support team is here to assist you.
-                            </p>
-                        </div>
                     </div>
                     
                     <div class="footer">
-                        <p>&copy; 2024 Dhami Electronics. All rights reserved.</p>
+                        <p>&copy; 2026 Dhami Electronics. All rights reserved.</p>
                         <p>This is an automated message, please do not reply.</p>
-                        <p>
-                            <a href="#" style="color: #6c757d;">Privacy Policy</a> | 
-                            <a href="#" style="color: #6c757d;">Terms of Service</a>
-                        </p>
                     </div>
                 </div>
             </body>
@@ -1169,7 +1249,6 @@ def remove_admin(id):
     flash(f'✅ Admin privileges removed from {user.username}!', 'success')
     return redirect(url_for('admin_dashboard'))
 
-
 @app.route('/cancel_order/<int:order_id>', methods=['POST'])
 @login_required
 def cancel_order(order_id):
@@ -1216,18 +1295,31 @@ def cancel_order(order_id):
     
     return jsonify({'success': True, 'message': 'Order cancelled successfully'})
 
+
 def send_order_cancellation_notification(order, user):
     """Send cancellation notification email to admin"""
     try:
         items_html = ""
         for item in order.items:
+            product_name = item.product.name if item.product else "Product Unavailable"
             items_html += f"""
             <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{item.product.name}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{product_name}</td>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">{item.quantity}</td>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {item.price:.2f}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {(item.price * item.quantity):.2f}</td>
             </tr>
             """
+        
+        # Calculate shipping info
+        subtotal = order.total_amount - calculate_shipping(order.total_amount)
+        shipping = calculate_shipping(subtotal)
+        
+        # Create shipping display text
+        if shipping == 0:
+            shipping_display = '<span style="color: #10b981; font-weight: bold;">FREE</span>'
+        else:
+            shipping_display = f'NPR {shipping:.2f}'
         
         msg = Message(
             f'❌ ORDER CANCELLED #{order.id} - Dhami Electronics', 
@@ -1238,11 +1330,18 @@ def send_order_cancellation_notification(order, user):
         <html>
         <head>
             <style>
-                body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; }}
-                .container {{ max-width: 800px; margin: 20px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; }}
+                body {{ font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }}
+                .container {{ max-width: 800px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
                 .header {{ background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 30px; text-align: center; }}
+                .header h1 {{ margin: 0; font-size: 28px; }}
+                .header p {{ margin: 10px 0 0; opacity: 0.9; }}
                 .content {{ padding: 30px; }}
                 .cancelled-badge {{ background: #fee2e2; color: #dc2626; padding: 8px 16px; border-radius: 50px; display: inline-block; font-weight: bold; }}
+                .order-details {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
+                table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+                th {{ background-color: #dc2626; color: white; padding: 12px; text-align: left; }}
+                td {{ padding: 10px; border-bottom: 1px solid #eee; }}
+                .price-breakdown {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
             </style>
         </head>
         <body>
@@ -1254,20 +1353,39 @@ def send_order_cancellation_notification(order, user):
                 <div class="content">
                     <div class="cancelled-badge">CANCELLED</div>
                     
-                    <h3>Customer Information:</h3>
-                    <p><strong>Name:</strong> {user.username}</p>
-                    <p><strong>Email:</strong> {user.email}</p>
-                    <p><strong>Phone:</strong> {order.phone or 'Not provided'}</p>
+                    <div class="order-details">
+                        <h3>📋 Customer Information:</h3>
+                        <p><strong>Name:</strong> {user.username}</p>
+                        <p><strong>Email:</strong> {user.email}</p>
+                        <p><strong>Phone:</strong> {order.phone or 'Not provided'}</p>
+                        <p><strong>Order Date:</strong> {order.created_at.strftime('%Y-%m-%d %H:%M:%S')}</p>
+                    </div>
                     
-                    <h3>Cancelled Items:</h3>
+                    <h3>📦 Cancelled Items:</h3>
                     <table style="width:100%; border-collapse: collapse;">
                         <thead>
-                            <tr><th>Product</th><th>Quantity</th><th>Price</th></tr>
+                            <tr><th>Product</th><th>Quantity</th><th>Unit Price</th><th>Total</th></tr>
                         </thead>
                         <tbody>{items_html}</tbody>
                     </table>
                     
-                    <p><strong>Total Amount Cancelled:</strong> NPR {order.total_amount:.2f}</p>
+                    <!-- Price Breakdown -->
+                    <div class="price-breakdown">
+                        <h4 style="margin-bottom: 15px; color: #2c3e50;">💰 Price Breakdown</h4>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span>Subtotal:</span>
+                            <span>NPR {subtotal:.2f}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span>Shipping Fee:</span>
+                            <span>{shipping_display}</span>
+                        </div>
+                        <div style="border-top: 1px solid #dee2e6; margin: 10px 0;"></div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 18px; font-weight: bold;">
+                            <span>Total Amount Cancelled:</span>
+                            <span style="color: #dc2626;">NPR {order.total_amount:.2f}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </body>
@@ -1280,19 +1398,41 @@ def send_order_cancellation_notification(order, user):
         print(f"Error sending cancellation notification: {str(e)}")
         return False
 
+
 def send_cancellation_confirmation_to_customer(order, user):
     """Send cancellation confirmation email to customer"""
     try:
         items_html = ""
         for item in order.items:
+            product_name = item.product.name if item.product else "Product Unavailable"
             items_html += f"""
             <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{item.product.name}</td>
+                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{product_name}</td>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">{item.quantity}</td>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {item.price:.2f}</td>
                 <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {(item.price * item.quantity):.2f}</td>
             </tr>
             """
+        
+        # Calculate shipping info
+        subtotal = order.total_amount - calculate_shipping(order.total_amount)
+        shipping = calculate_shipping(subtotal)
+        
+        # Create shipping display text
+        if shipping == 0:
+            shipping_display = '<span style="color: #10b981; font-weight: bold;"><i class="fas fa-gift"></i> FREE</span>'
+        else:
+            shipping_display = f'NPR {shipping:.2f}'
+        
+        # Customer support section
+        customer_support = f'''
+        <div style="background-color: #f8f7da; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #E66239;">
+            <strong style="color: #E66239;">📞 Need Assistance?</strong><br>
+            <span style="color: #333;">Email: <a href="mailto:support@dhamielectronics.com" style="color: #E66239;">support@dhamielectronics.com</a></span><br>
+            <span style="color: #333;">Phone: +977-9866109958</span><br>
+            <span style="color: #333;">Working Hours: 10:00 AM - 6:00 PM (Sun - Fri)</span>
+        </div>
+        '''
         
         msg = Message(
             f'Order #{order.id} Cancelled - Dhami Electronics', 
@@ -1303,11 +1443,18 @@ def send_cancellation_confirmation_to_customer(order, user):
         <html>
         <head>
             <style>
-                body {{ font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f4; }}
-                .container {{ max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; overflow: hidden; }}
+                body {{ font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }}
+                .container {{ max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
                 .header {{ background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 30px; text-align: center; }}
+                .header h1 {{ margin: 0; font-size: 28px; }}
+                .header p {{ margin: 10px 0 0; opacity: 0.9; }}
                 .content {{ padding: 30px; }}
                 .refund-info {{ background: #fef2f2; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626; }}
+                .order-details {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
+                table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+                th {{ background-color: #dc2626; color: white; padding: 12px; text-align: left; }}
+                td {{ padding: 10px; border-bottom: 1px solid #eee; }}
+                .price-breakdown {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
             </style>
         </head>
         <body>
@@ -1316,22 +1463,65 @@ def send_cancellation_confirmation_to_customer(order, user):
                     <h1>❌ Order Cancelled</h1>
                     <p>Order #{order.id}</p>
                 </div>
+                
                 <div class="content">
                     <p>Dear {user.username},</p>
                     <p>Your order has been cancelled as requested.</p>
+                    
+                    <div class="order-details">
+                        <h3>📋 Order Information</h3>
+                        <p><strong>Order #:</strong> {order.id}</p>
+                        <p><strong>Order Date:</strong> {order.created_at.strftime('%Y-%m-%d %H:%M:%S')}</p>
+                        <p><strong>Shipping Address:</strong> {order.shipping_address or 'Not provided'}</p>
+                        <p><strong>Phone:</strong> {order.phone or 'Not provided'}</p>
+                    </div>
+                    
+                    <h3>📦 Cancelled Items:</h3>
+                    <table style="width:100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>{items_html}</tbody>
+                    </table>
+                    
+                    <!-- Price Breakdown -->
+                    <div class="price-breakdown">
+                        <h4 style="margin-bottom: 15px; color: #2c3e50;">💰 Price Breakdown</h4>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span>Subtotal:</span>
+                            <span>NPR {subtotal:.2f}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span>Shipping Fee:</span>
+                            <span>{shipping_display}</span>
+                        </div>
+                        <div style="border-top: 1px solid #dee2e6; margin: 10px 0;"></div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 18px; font-weight: bold;">
+                            <span>Total Amount:</span>
+                            <span style="color: #dc2626;">NPR {order.total_amount:.2f}</span>
+                        </div>
+                    </div>
                     
                     <div class="refund-info">
                         <strong>💰 Refund Information:</strong><br>
                         Your payment of <strong>NPR {order.total_amount:.2f}</strong> will be refunded within 3-5 business days.
                     </div>
                     
-                    <h3>Cancelled Items:</h3>
-                    <table style="width:100%; border-collapse: collapse;">
-                        <thead><tr><th>Product</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
-                        <tbody>{items_html}</tbody>
-                    </table>
+                    {customer_support}
                     
-                    <p style="margin-top: 20px;">If you have any questions, please contact our support team.</p>
+                    <p style="margin-top: 20px; color: #666; text-align: center;">
+                        Thank you for shopping with Dhami Electronics.
+                    </p>
+                </div>
+                
+                <div class="footer" style="background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 12px;">
+                    <p>&copy; 2026 Dhami Electronics. All rights reserved.</p>
+                    <p>This is an automated message, please do not reply.</p>
                 </div>
             </div>
         </body>
