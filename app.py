@@ -152,36 +152,146 @@ def is_valid_email(email):
     return re.match(pattern, email) is not None
 
 def send_otp_email(email, otp):
-    """Send OTP to user's email"""
+    """Send OTP to user's email - Mobile Responsive"""
     try:
         msg = Message('Email Verification - Dhami Electronics', recipients=[email])
-        msg.html = f'''
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }}
-                .container {{ max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; }}
-                .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }}
-                .content {{ padding: 30px; }}
-                .otp-code {{ font-size: 32px; font-weight: bold; color: #667eea; text-align: center; padding: 20px; background-color: #f8f9fa; border-radius: 8px; letter-spacing: 5px; margin: 20px 0; }}
-                .footer {{ background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 12px; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header"><h1>Dhami Electronics</h1><p>Email Verification</p></div>
-                <div class="content">
-                    <h2>Hello!</h2>
-                    <p>Please use the following OTP to verify your email address:</p>
-                    <div class="otp-code"><strong>{otp}</strong></div>
-                    <p>This OTP is valid for 10 minutes.</p>
-                </div>
-                <div class="footer"><p>&copy; 2026 Dhami Electronics. All rights reserved.</p></div>
+        msg.html = f'''<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Email Verification - Dhami Electronics</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 10px;
+            -webkit-font-smoothing: antialiased;
+        }}
+        .email-container {{
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }}
+        @media only screen and (max-width: 600px) {{
+            body {{
+                padding: 0;
+            }}
+            .email-container {{
+                width: 100%;
+                border-radius: 0;
+            }}
+            .content-padding {{
+                padding: 20px !important;
+            }}
+            .otp-code {{
+                font-size: 28px !important;
+                padding: 15px !important;
+                letter-spacing: 3px !important;
+            }}
+            .header h1 {{
+                font-size: 22px !important;
+            }}
+        }}
+        .header {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 25px 20px;
+            text-align: center;
+            color: white;
+        }}
+        .header h1 {{
+            font-size: 24px;
+            margin: 0;
+            font-weight: 600;
+        }}
+        .header p {{
+            font-size: 13px;
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }}
+        .content-padding {{
+            padding: 25px;
+        }}
+        .greeting {{
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }}
+        .message {{
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }}
+        .otp-code {{
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            text-align: center;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            letter-spacing: 5px;
+            margin: 20px 0;
+            word-wrap: break-word;
+            word-break: break-all;
+        }}
+        .validity {{
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-top: 15px;
+        }}
+        .footer {{
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+        }}
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>Dhami Electronics</h1>
+            <p>Email Verification</p>
+        </div>
+        
+        <div class="content-padding">
+            <div class="greeting">Hello!</div>
+            <div class="message">
+                Thank you for registering with Dhami Electronics. Please use the following OTP to verify your email address:
             </div>
-        </body>
-        </html>
-        '''
+            
+            <div class="otp-code">
+                <strong>{otp}</strong>
+            </div>
+            
+            <div class="validity">
+                ⏰ This OTP is valid for 10 minutes
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Dhami Electronics. All rights reserved.</p>
+            <p style="font-size: 10px;">This is an automated message, please do not reply.</p>
+        </div>
+    </div>
+</body>
+</html>'''
         mail.send(msg)
         print(f"OTP email sent to {email}")
         return True
@@ -189,99 +299,247 @@ def send_otp_email(email, otp):
         print(f"Error sending OTP email: {str(e)}")
         return False
 
+
 def send_order_notification_to_admin(order, user, order_items, total_amount, shipping_address, phone):
-    """Send order notification email to admin"""
+    """Send order notification email to admin - Mobile Responsive"""
     try:
-        items_html = ""
-        for item in order_items:
-            items_html += f"""
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{item.product.name}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">{item.quantity}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {item.price:.2f}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {(item.price * item.quantity):.2f}</td>
-            </tr>
-            """
+        # Helper function to truncate long product names
+        def truncate_text(text, max_length=50):
+            if len(text) > max_length:
+                return text[:max_length] + '...'
+            return text
         
         subtotal = total_amount - calculate_shipping(total_amount)
         shipping = calculate_shipping(subtotal)
+        shipping_display = 'FREE' if shipping == 0 else f'NPR {shipping:.0f}'
         
-        # Create shipping display text
-        if shipping == 0:
-            shipping_display = '<span class="shipping-free"><i class="fas fa-gift"></i> FREE</span>'
-        else:
-            shipping_display = f'<span class="shipping-fee">NPR {shipping:.2f}</span>'
+        # Build order items HTML
+        items_html = ""
+        for item in order_items:
+            product_name = truncate_text(item.product.name, 45)
+            items_html += f'''
+            <div style="padding: 10px 0; border-bottom: 1px solid #e0e0e0;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
+                    <div style="flex: 2; min-width: 150px;">
+                        <div style="font-size: 13px; color: #333; line-height: 1.4; word-wrap: break-word; word-break: break-word;">{product_name}</div>
+                        <div style="font-size: 11px; color: #999; margin-top: 4px;">Quantity: {item.quantity}</div>
+                    </div>
+                    <div style="font-weight: 600; color: #667eea; font-size: 13px; white-space: nowrap;">
+                        NPR {item.price * item.quantity:.0f}
+                    </div>
+                </div>
+            </div>
+            '''
         
         msg = Message(
             f'🛍️ NEW ORDER #{order.id} - Dhami Electronics', 
             recipients=[ADMIN_EMAIL]
         )
-        msg.html = f'''
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body {{ font-family: Arial, sans-serif; background-color: #f4f4f4; }}
-                .container {{ max-width: 800px; margin: 20px auto; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }}
-                .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; }}
-                .content {{ padding: 30px; }}
-                .order-details {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
-                table {{ width: 100%; border-collapse: collapse; }}
-                th {{ background-color: #667eea; color: white; padding: 12px; text-align: left; }}
-                td {{ padding: 10px; }}
-                .total {{ font-size: 18px; font-weight: bold; text-align: right; padding: 15px; background-color: #f8f9fa; }}
-                .status {{ display: inline-block; padding: 5px 10px; background-color: #ffc107; color: #000; border-radius: 5px; font-weight: bold; }}
-                .shipping-free {{ color: #10b981; font-weight: bold; }}
-                .shipping-fee {{ color: #f59e0b; font-weight: bold; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>🛍️ New Order Received!</h1>
-                    <p>Order #{order.id}</p>
+        
+        msg.html = f'''<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>New Order Notification</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 10px;
+            -webkit-font-smoothing: antialiased;
+        }}
+        .email-container {{
+            max-width: 550px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }}
+        @media only screen and (max-width: 600px) {{
+            body {{
+                padding: 0;
+            }}
+            .email-container {{
+                width: 100%;
+                border-radius: 0;
+            }}
+            .content-padding {{
+                padding: 16px !important;
+            }}
+            .header h1 {{
+                font-size: 20px !important;
+            }}
+        }}
+        .header {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }}
+        .header h1 {{
+            font-size: 22px;
+            margin: 0;
+        }}
+        .header p {{
+            font-size: 13px;
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }}
+        .content-padding {{
+            padding: 20px;
+        }}
+        .info-box {{
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }}
+        .info-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }}
+        .info-label {{
+            font-weight: 600;
+            color: #555;
+            min-width: 100px;
+        }}
+        .info-value {{
+            color: #333;
+            text-align: right;
+            word-wrap: break-word;
+            word-break: break-word;
+            flex: 1;
+        }}
+        .section-title {{
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0 12px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #f0f0f0;
+        }}
+        .price-breakdown {{
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }}
+        .price-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+        }}
+        .total-row {{
+            border-top: 1px solid #ddd;
+            margin-top: 8px;
+            padding-top: 10px;
+            font-weight: 700;
+            font-size: 15px;
+        }}
+        .status-badge {{
+            display: inline-block;
+            background: #ffc107;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }}
+        .footer {{
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+        }}
+        @media (max-width: 480px) {{
+            .info-row {{
+                flex-direction: column;
+                align-items: flex-start;
+            }}
+            .info-value {{
+                text-align: left;
+                width: 100%;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>🛍️ New Order Received!</h1>
+            <p>Order #{order.id}</p>
+        </div>
+        
+        <div class="content-padding">
+            <div class="info-box">
+                <div class="info-row">
+                    <span class="info-label">👤 Customer Name:</span>
+                    <span class="info-value">{user.username}</span>
                 </div>
-                <div class="content">
-                    <div class="order-details">
-                        <h3>📋 Customer Information:</h3>
-                        <p><strong>Name:</strong> {user.username}</p>
-                        <p><strong>Email:</strong> {user.email}</p>
-                        <p><strong>Phone:</strong> {phone}</p>
-                        <p><strong>Shipping Address:</strong> {shipping_address}</p>
-                        <p><strong>Order Date:</strong> {order.created_at.strftime('%Y-%m-%d %H:%M:%S')}</p>
-                        <p><strong>Order Status:</strong> <span class="status">{order.status.upper()}</span></p>
-                    </div>
-                    
-                    <h3>📦 Order Items:</h3>
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr><th>Product</th><th>Quantity</th><th>Unit Price</th><th>Total</th></tr>
-                        </thead>
-                        <tbody>{items_html}</tbody>
-                    </table>
-                    
-                    <div style="margin-top: 20px;">
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                            <span>Subtotal:</span>
-                            <span>NPR {subtotal:.2f}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                            <span>Shipping Fee:</span>
-                            {shipping_display}
-                        </div>
-                        <hr>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 18px; font-weight: bold;">
-                            <span>Grand Total:</span>
-                            <span>NPR {total_amount:.2f}</span>
-                        </div>
-                    </div>
-                    
-            
+                <div class="info-row">
+                    <span class="info-label">📧 Email:</span>
+                    <span class="info-value">{user.email}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📞 Phone:</span>
+                    <span class="info-value">{phone}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📍 Shipping Address:</span>
+                    <span class="info-value">{shipping_address}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📅 Order Date:</span>
+                    <span class="info-value">{order.created_at.strftime('%b %d, %Y')}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📊 Order Status:</span>
+                    <span class="info-value"><span class="status-badge">{order.status.upper()}</span></span>
                 </div>
             </div>
-        </body>
-        </html>
-        '''
+            
+            <div class="section-title">📦 Order Items</div>
+            {items_html}
+            
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span>Subtotal:</span>
+                    <span>NPR {subtotal:.0f}</span>
+                </div>
+                <div class="price-row">
+                    <span>Shipping Fee:</span>
+                    <span>{shipping_display}</span>
+                </div>
+                <div class="price-row total-row">
+                    <span>Grand Total:</span>
+                    <span style="color: #667eea;">NPR {total_amount:.0f}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Dhami Electronics. All rights reserved.</p>
+            <p>This is an automated notification for admin</p>
+        </div>
+    </div>
+</body>
+</html>'''
         mail.send(msg)
         print(f"Order notification sent to admin: {ADMIN_EMAIL}")
         return True
@@ -291,39 +549,49 @@ def send_order_notification_to_admin(order, user, order_items, total_amount, shi
 
 
 def send_order_confirmation_to_customer(order, user, order_items, total_amount, shipping_address, phone):
-    """Send order confirmation email to customer"""
+    """Send order confirmation email to customer - Mobile Responsive"""
     try:
-        items_html = ""
-        for item in order_items:
-            items_html += f"""
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{item.product.name}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">{item.quantity}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {item.price:.2f}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {(item.price * item.quantity):.2f}</td>
-            </tr>
-            """
+        # Helper function to truncate long product names
+        def truncate_text(text, max_length=50):
+            if len(text) > max_length:
+                return text[:max_length] + '...'
+            return text
         
         subtotal = total_amount - calculate_shipping(total_amount)
         shipping = calculate_shipping(subtotal)
+        shipping_display = 'FREE' if shipping == 0 else f'NPR {shipping:.0f}'
         
-        # Create shipping display text
+        # Free shipping message
         if shipping == 0:
-            shipping_display = '<span class="shipping-free"><i class="fas fa-gift"></i> FREE Shipping</span>'
             free_shipping_message = '''
-            <div style="background-color: #d4edda; padding: 12px; border-radius: 8px; margin: 20px 0; text-align: center;">
-                <i class="fas fa-truck" style="color: #155724;"></i>
-                <strong style="color: #155724;">Free Shipping Applied!</strong>
-                <p style="margin: 5px 0 0 0; color: #155724; font-size: 12px;">You've qualified for free shipping on this order.</p>
+            <div style="background: #d4edda; padding: 12px; border-radius: 8px; margin: 20px 0; text-align: center; border-left: 3px solid #28a745;">
+                <div style="color: #155724; font-weight: 600; font-size: 13px;">🎉 Free Shipping Applied!</div>
+                <div style="color: #155724; font-size: 11px; margin-top: 4px;">You've qualified for free shipping on this order.</div>
             </div>
             '''
         else:
-            shipping_display = f'<span class="shipping-fee">NPR {shipping:.2f}</span>'
             free_shipping_message = '''
-            <div style="background-color: #fff3cd; padding: 12px; border-radius: 8px; margin: 20px 0; text-align: center;">
-                <i class="fas fa-info-circle" style="color: #856404;"></i>
-                <strong style="color: #856404;">Shipping Information</strong>
-                <p style="margin: 5px 0 0 0; color: #856404; font-size: 12px;">A flat shipping fee of NPR 150 applies to orders under NPR 5000.</p>
+            <div style="background: #fff3cd; padding: 12px; border-radius: 8px; margin: 20px 0; text-align: center; border-left: 3px solid #ffc107;">
+                <div style="color: #856404; font-weight: 600; font-size: 13px;">ℹ️ Shipping Information</div>
+                <div style="color: #856404; font-size: 11px; margin-top: 4px;">A flat shipping fee of NPR 150 applies to orders under NPR 5000.</div>
+            </div>
+            '''
+        
+        # Build order items HTML
+        items_html = ""
+        for item in order_items:
+            product_name = truncate_text(item.product.name, 45)
+            items_html += f'''
+            <div style="padding: 10px 0; border-bottom: 1px solid #e0e0e0;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
+                    <div style="flex: 2; min-width: 150px;">
+                        <div style="font-size: 13px; color: #333; line-height: 1.4; word-wrap: break-word; word-break: break-word;">{product_name}</div>
+                        <div style="font-size: 11px; color: #999; margin-top: 4px;">Quantity: {item.quantity}</div>
+                    </div>
+                    <div style="font-weight: 600; color: #28a745; font-size: 13px; white-space: nowrap;">
+                        NPR {item.price * item.quantity:.0f}
+                    </div>
+                </div>
             </div>
             '''
         
@@ -331,101 +599,276 @@ def send_order_confirmation_to_customer(order, user, order_items, total_amount, 
             f'✅ Order Confirmation #{order.id} - Dhami Electronics', 
             recipients=[user.email]
         )
-        msg.html = f'''
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body {{ font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }}
-                .container {{ max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
-                .header {{ background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; padding: 30px; text-align: center; }}
-                .header h1 {{ margin: 0; font-size: 28px; }}
-                .header p {{ margin: 10px 0 0; opacity: 0.9; }}
-                .content {{ padding: 30px; }}
-                .order-details {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
-                table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-                th {{ background-color: #28a745; color: white; padding: 12px; text-align: left; }}
-                td {{ padding: 10px; border-bottom: 1px solid #eee; }}
-                .total {{ font-size: 18px; font-weight: bold; text-align: right; padding: 15px; background-color: #f8f9fa; }}
-                .button {{ display: inline-block; background-color: #28a745; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px; }}
-                .footer {{ background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 12px; }}
-                .shipping-free {{ color: #10b981; font-weight: bold; }}
-                .shipping-fee {{ color: #f59e0b; font-weight: bold; }}
-                .price-breakdown {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>✅ Order Confirmed!</h1>
-                    <p>Thank you for shopping with Dhami Electronics</p>
+        
+        msg.html = f'''<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Order Confirmation - Dhami Electronics</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 10px;
+            -webkit-font-smoothing: antialiased;
+        }}
+        .email-container {{
+            max-width: 550px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }}
+        @media only screen and (max-width: 600px) {{
+            body {{
+                padding: 0;
+            }}
+            .email-container {{
+                width: 100%;
+                border-radius: 0;
+            }}
+            .content-padding {{
+                padding: 16px !important;
+            }}
+            .header h1 {{
+                font-size: 20px !important;
+            }}
+        }}
+        .header {{
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }}
+        .header h1 {{
+            font-size: 22px;
+            margin: 0;
+        }}
+        .header p {{
+            font-size: 13px;
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }}
+        .content-padding {{
+            padding: 20px;
+        }}
+        .greeting {{
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }}
+        .info-box {{
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }}
+        .info-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }}
+        .info-label {{
+            font-weight: 600;
+            color: #555;
+            min-width: 100px;
+        }}
+        .info-value {{
+            color: #333;
+            text-align: right;
+            word-wrap: break-word;
+            word-break: break-word;
+            flex: 1;
+        }}
+        .section-title {{
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0 12px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #f0f0f0;
+        }}
+        .price-breakdown {{
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }}
+        .price-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+        }}
+        .total-row {{
+            border-top: 1px solid #ddd;
+            margin-top: 8px;
+            padding-top: 10px;
+            font-weight: 700;
+            font-size: 15px;
+        }}
+        .delivery-note {{
+            background: #e8f5e9;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }}
+        .delivery-text {{
+            font-size: 12px;
+            color: #2e7d32;
+            line-height: 1.4;
+        }}
+        .support-box {{
+            background: #fff8e1;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 3px solid #E66239;
+        }}
+        .support-title {{
+            font-weight: 600;
+            color: #E66239;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }}
+        .support-text {{
+            font-size: 12px;
+            color: #555;
+            line-height: 1.4;
+        }}
+        .support-text a {{
+            color: #E66239;
+            text-decoration: none;
+        }}
+        .footer {{
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+        }}
+        .button {{
+            display: block;
+            background: #28a745;
+            color: white;
+            padding: 12px;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 20px 0 10px;
+        }}
+        @media (max-width: 480px) {{
+            .info-row {{
+                flex-direction: column;
+                align-items: flex-start;
+            }}
+            .info-value {{
+                text-align: left;
+                width: 100%;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>✅ Order Confirmed!</h1>
+            <p>Thank you for shopping with Dhami Electronics</p>
+        </div>
+        
+        <div class="content-padding">
+            <div class="greeting">
+                Dear {user.username},
+            </div>
+            
+            <div class="info-box">
+                <div class="info-row">
+                    <span class="info-label">📋 Order #:</span>
+                    <span class="info-value">{order.id}</span>
                 </div>
-                
-                <div class="content">
-                    <div class="order-details">
-                        <h3>📋 Order Information</h3>
-                        <p><strong>Order #:</strong> {order.id}</p>
-                        <p><strong>Order Date:</strong> {order.created_at.strftime('%Y-%m-%d %H:%M:%S')}</p>
-                        <p><strong>Shipping Address:</strong> {shipping_address}</p>
-                        <p><strong>Phone:</strong> {phone}</p>
-                    </div>
-                    
-                    <h3>📦 Order Items</h3>
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Unit Price</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {items_html}
-                        </tbody>
-                    </table>
-                    
-                    <!-- Price Breakdown -->
-                    <div class="price-breakdown">
-                        <h4 style="margin-bottom: 15px; color: #2c3e50;">💰 Price Breakdown</h4>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                            <span>Subtotal:</span>
-                            <span>NPR {subtotal:.2f}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                            <span>Shipping Fee:</span>
-                            {shipping_display}
-                        </div>
-                        <div style="border-top: 1px solid #dee2e6; margin: 10px 0;"></div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 18px; font-weight: bold;">
-                            <span>Grand Total:</span>
-                            <span style="color: #28a745;">NPR {total_amount:.2f}</span>
-                        </div>
-                    </div>
-                    
-                    {free_shipping_message}
-                    
-                    <p style="margin-top: 20px; color: #666; text-align: center;">
-                        Your order will be delivered within 3-5 business days.<br>
-                        You can track your order status in your account dashboard.
-                    </p>
+                <div class="info-row">
+                    <span class="info-label">📅 Order Date:</span>
+                    <span class="info-value">{order.created_at.strftime('%b %d, %Y')}</span>
                 </div>
-                
-                <div class="footer">
-                    <p>&copy; 2026 Dhami Electronics. All rights reserved.</p>
-                    <p>This is an automated message, please do not reply.</p>
+                <div class="info-row">
+                    <span class="info-label">📍 Shipping Address:</span>
+                    <span class="info-value">{shipping_address}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📞 Phone:</span>
+                    <span class="info-value">{phone}</span>
                 </div>
             </div>
-        </body>
-        </html>
-        '''
+            
+            <div class="section-title">📦 Order Items</div>
+            {items_html}
+            
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span>Subtotal:</span>
+                    <span>NPR {subtotal:.0f}</span>
+                </div>
+                <div class="price-row">
+                    <span>Shipping Fee:</span>
+                    <span>{shipping_display}</span>
+                </div>
+                <div class="price-row total-row">
+                    <span>Grand Total:</span>
+                    <span style="color: #28a745;">NPR {total_amount:.0f}</span>
+                </div>
+            </div>
+            
+            {free_shipping_message}
+            
+            <div class="delivery-note">
+                <div class="delivery-text">
+                    🚚 Your order will be delivered within 3-5 business days.<br>
+                    You can track your order status in your account dashboard.
+                </div>
+            </div>
+            
+            <div class="support-box">
+                <div class="support-title">📞 Need Assistance?</div>
+                <div class="support-text">
+                    📧 <a href="mailto:noreply.dhamielectronics@gmail.com">support@dhamielectronics.com</a><br>
+                    📱 +977-9866109958<br>
+                    ⏰ 10:00 AM - 6:00 PM (Sun-Fri)
+                </div>
+            </div>
+            
+            
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Dhami Electronics. All rights reserved.</p>
+            <p style="font-size: 10px;">This is an automated message, please do not reply.</p>
+        </div>
+    </div>
+</body>
+</html>'''
         mail.send(msg)
         print(f"Order confirmation sent to customer: {user.email}")
         return True
     except Exception as e:
         print(f"Error sending confirmation email to customer: {str(e)}")
         return False
-
 # Routes
 @app.route('/')
 def index():
@@ -532,19 +975,24 @@ def update_cart(item_id):
     
     if quantity > 0:
         cart_item.quantity = quantity
+        db.session.commit()
+        # Return item_total for the updated item
+        item_total = cart_item.product.price * cart_item.quantity
+        return jsonify({
+            'success': True,
+            'new_total': sum(item.product.price * item.quantity for item in Cart.query.filter_by(user_id=current_user.id).all()),
+            'item_total': item_total
+        })
     else:
+        # Remove the item completely
         db.session.delete(cart_item)
-    
-    db.session.commit()
-    
-    cart_items = Cart.query.filter_by(user_id=current_user.id).all()
-    new_total = sum(item.product.price * item.quantity for item in cart_items)
-    
-    return jsonify({
-        'success': True,
-        'new_total': new_total,
-        'item_total': cart_item.product.price * cart_item.quantity if quantity > 0 else 0
-    })
+        db.session.commit()
+        # Return success without item_total (item is gone)
+        return jsonify({
+            'success': True,
+            'new_total': sum(item.product.price * item.quantity for item in Cart.query.filter_by(user_id=current_user.id).all()),
+            'removed': True  # Flag indicating item was removed
+        })
 
 @app.route('/remove_from_cart/<int:item_id>')
 @login_required
@@ -879,188 +1327,362 @@ def update_order_status(order_id):
     
     order = Order.query.get_or_404(order_id)
     new_status = request.json.get('status')
-    old_status = order.status
     
     if new_status in ['pending', 'processing', 'shipped', 'delivered', 'cancelled']:
         order.status = new_status
         db.session.commit()
         
-        # Send status update email to customer with beautiful design
+        # Send status update email to customer
         try:
-            # Prepare order items for email
-            items_html = ""
-            for item in order.items:
-                # Check if product exists (handle deleted products)
-                product_name = item.product.name if item.product else "Product Unavailable"
-                items_html += f"""
-                <tr>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{product_name}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">{item.quantity}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {item.price:.2f}</td>
-                    <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {(item.price * item.quantity):.2f}</td>
-                </tr>
-                """
-            
             # Status specific content
             status_content = {
                 'processing': {
                     'color': '#17a2b8',
+                    'bg_color': '#e1f5fe',
                     'icon': '⚙️',
                     'title': 'Order is Being Processed',
-                    'message': 'Great news! Your order has been received and is now being processed. Our team is working hard to prepare your items for shipment.',
-                    'additional_info': 'You will receive another notification once your order has been shipped.'
+                    'message': 'Great news! Your order has been received and is now being processed.'
                 },
                 'shipped': {
                     'color': '#007bff',
+                    'bg_color': '#e3f2fd',
                     'icon': '🚚',
                     'title': 'Order Has Been Shipped!',
-                    'message': 'Your order is on the way! Our delivery partner has picked up your package and it is now in transit.',
-                    'additional_info': 'Estimated delivery time is 3-5 business days. You can track your order status in your account dashboard.'
+                    'message': 'Your order is on the way! Our delivery partner has picked up your package.'
                 },
                 'delivered': {
                     'color': '#28a745',
+                    'bg_color': '#e8f5e9',
                     'icon': '✅',
                     'title': 'Order Delivered Successfully!',
-                    'message': 'Your order has been delivered! We hope you enjoy your purchase.',
-                    'additional_info': 'If you have any issues with your order, please contact our support team within 7 days.'
+                    'message': 'Your order has been delivered! We hope you enjoy your purchase.'
                 },
                 'cancelled': {
                     'color': '#dc3545',
+                    'bg_color': '#ffebee',
                     'icon': '❌',
                     'title': 'Order Cancelled',
-                    'message': 'We regret to inform you that your order has been cancelled. We sincerely apologize for any inconvenience caused.',
-                    'additional_info': 'Please contact our support team for further assistance. Your payment will be refunded within 3-5 business days.'
+                    'message': 'Your order has been cancelled as requested.'
                 },
                 'pending': {
                     'color': '#ffc107',
+                    'bg_color': '#fff3e0',
                     'icon': '⏳',
                     'title': 'Order Confirmed',
-                    'message': 'Your order has been confirmed and is awaiting processing.',
-                    'additional_info': 'You will receive updates as your order progresses.'
+                    'message': 'Your order has been confirmed and is awaiting processing.'
                 }
             }
             
             content = status_content.get(new_status, status_content['pending'])
             
-            # Create customer support section (shown for ALL order statuses)
-            customer_support = f'''
-            <div style="background-color: #f8f7da; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #E66239;">
-                <strong style="color: #E66239;">📞 Need Assistance?</strong><br>
-                <span style="color: #333;">Email: <a href="mailto:support@dhamielectronics.com" style="color: #E66239;">support@dhamielectronics.com</a></span><br>
-                <span style="color: #333;">Phone: +977-9866109958</span><br>
-                <span style="color: #333;">Working Hours: 10:00 AM - 6:00 PM (Sun - Fri)</span>
-            </div>
-            '''
-            
-            # Create status badge HTML
-            status_badge = f'<span style="display: inline-block; padding: 8px 16px; background-color: {content["color"]}; color: white; border-radius: 50px; font-weight: bold;">{new_status.upper()}</span>'
-            
-            # Calculate shipping info for email
+            # Calculate shipping info
             subtotal = order.total_amount - calculate_shipping(order.total_amount)
             shipping = calculate_shipping(subtotal)
+            shipping_display = 'FREE' if shipping == 0 else f'NPR {shipping:.0f}'
             
-            # Create shipping display text
-            if shipping == 0:
-                shipping_display = '<span style="color: #10b981; font-weight: bold;"><i class="fas fa-gift"></i> FREE</span>'
-            else:
-                shipping_display = f'<span style="color: #f59e0b; font-weight: bold;">NPR {shipping:.2f}</span>'
+            # Helper function to truncate long product names
+            def truncate_text(text, max_length=50):
+                if len(text) > max_length:
+                    return text[:max_length] + '...'
+                return text
             
+            # Build order items HTML with proper wrapping
+            items_html = ""
+            for item in order.items:
+                product_name = item.product.name if item.product else "Product Unavailable"
+                truncated_name = truncate_text(product_name, 45)
+                items_html += f'''
+                <div style="padding: 12px 0; border-bottom: 1px solid #e0e0e0;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
+                        <div style="flex: 2; min-width: 150px;">
+                            <div style="font-size: 14px; color: #333; line-height: 1.4; word-wrap: break-word; word-break: break-word;">{truncated_name}</div>
+                            <div style="font-size: 11px; color: #999; margin-top: 4px;">Quantity: {item.quantity}</div>
+                        </div>
+                        <div style="font-weight: 600; color: #E66239; font-size: 14px; white-space: nowrap;">
+                            NPR {item.price * item.quantity:.0f}
+                        </div>
+                    </div>
+                </div>
+                '''
+            
+            # Mobile-friendly HTML email
             msg = Message(
                 f'Order #{order.id} Status Update - Dhami Electronics', 
                 recipients=[order.user.email]
             )
-            msg.html = f'''
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    body {{ font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }}
-                    .container {{ max-width: 600px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
-                    .header {{ background: linear-gradient(135deg, {content["color"]} 0%, {content["color"]}dd 100%); color: white; padding: 30px; text-align: center; }}
-                    .header h1 {{ margin: 0; font-size: 28px; }}
-                    .header p {{ margin: 10px 0 0; opacity: 0.9; }}
-                    .content {{ padding: 30px; }}
-                    .status-box {{ background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center; }}
-                    .order-details {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
-                    table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-                    th {{ background-color: {content["color"]}; color: white; padding: 12px; text-align: left; }}
-                    td {{ padding: 10px; border-bottom: 1px solid #eee; }}
-                    .total {{ font-size: 18px; font-weight: bold; text-align: right; padding: 15px; background-color: #f8f9fa; }}
-                    .button {{ display: inline-block; background-color: {content["color"]}; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin-top: 20px; }}
-                    .footer {{ background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 12px; }}
-                    .price-breakdown {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>{content["icon"]} Order Status Update</h1>
-                        <p>Order #{order.id}</p>
-                    </div>
-                    
-                    <div class="content">
-                        <div class="status-box">
-                            {status_badge}
-                            <h3 style="margin-top: 15px; color: #333;">{content["title"]}</h3>
-                            <p style="color: #666;">{content["message"]}</p>
-                        </div>
-                        
-                        <div class="order-details">
-                            <h3>📋 Order Information</h3>
-                            <p><strong>Order Date:</strong> {order.created_at.strftime('%Y-%m-%d %H:%M:%S')}</p>
-                            <p><strong>Shipping Address:</strong> {order.shipping_address or 'Not provided'}</p>
-                            <p><strong>Phone:</strong> {order.phone or 'Not provided'}</p>
-                        </div>
-                        
-                        <h3>📦 Order Items</h3>
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <thead>
-                                <tr>
-                                    <th>Product</th>
-                                    <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {items_html}
-                            </tbody>
-                        </table>
-                        
-                        <!-- Price Breakdown -->
-                        <div class="price-breakdown">
-                            <h4 style="margin-bottom: 15px; color: #2c3e50;">💰 Price Breakdown</h4>
-                            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                                <span>Subtotal:</span>
-                                <span>NPR {subtotal:.2f}</span>
-                            </div>
-                            <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                                <span>Shipping Fee:</span>
-                                {shipping_display}
-                            </div>
-                            <div style="border-top: 1px solid #dee2e6; margin: 10px 0;"></div>
-                            <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 18px; font-weight: bold;">
-                                <span>Total Amount:</span>
-                                <span style="color: {content["color"]};">NPR {order.total_amount:.2f}</span>
-                            </div>
-                        </div>
-                        
-                        <p style="margin-top: 20px; color: #666; text-align: center;">
-                            {content["additional_info"]}
-                        </p>
-                        
-                        <!-- Customer Support Section - Shows for ALL order statuses -->
-                        {customer_support}
-                    </div>
-                    
-                    <div class="footer">
-                        <p>&copy; 2026 Dhami Electronics. All rights reserved.</p>
-                        <p>This is an automated message, please do not reply.</p>
-                    </div>
+            
+            msg.html = f'''<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Order Status Update</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 10px;
+            -webkit-font-smoothing: antialiased;
+        }}
+        .email-container {{
+            max-width: 550px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }}
+        @media only screen and (max-width: 600px) {{
+            body {{
+                padding: 0;
+            }}
+            .email-container {{
+                width: 100%;
+                border-radius: 0;
+            }}
+            .content-padding {{
+                padding: 16px !important;
+            }}
+            .header h1 {{
+                font-size: 20px !important;
+            }}
+            .header p {{
+                font-size: 12px !important;
+            }}
+        }}
+        .header {{
+            background: {content['color']};
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }}
+        .header h1 {{
+            font-size: 22px;
+            margin: 0;
+        }}
+        .header p {{
+            font-size: 13px;
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }}
+        .content-padding {{
+            padding: 20px;
+        }}
+        .status-box {{
+            background: {content['bg_color']};
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }}
+        .status-badge {{
+            display: inline-block;
+            background: {content['color']};
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }}
+        .status-title {{
+            font-size: 17px;
+            font-weight: 600;
+            color: #333;
+            margin: 8px 0;
+        }}
+        .status-message {{
+            font-size: 13px;
+            color: #666;
+            line-height: 1.4;
+        }}
+        .info-box {{
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }}
+        .info-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }}
+        .info-label {{
+            font-weight: 600;
+            color: #555;
+            min-width: 100px;
+        }}
+        .info-value {{
+            color: #333;
+            text-align: right;
+            word-wrap: break-word;
+            word-break: break-word;
+            flex: 1;
+        }}
+        .section-title {{
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0 12px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #f0f0f0;
+        }}
+        .price-breakdown {{
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }}
+        .price-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+        }}
+        .total-row {{
+            border-top: 1px solid #ddd;
+            margin-top: 8px;
+            padding-top: 10px;
+            font-weight: 700;
+            font-size: 15px;
+        }}
+        .support-box {{
+            background: #fff8e1;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 3px solid #E66239;
+        }}
+        .support-title {{
+            font-weight: 600;
+            color: #E66239;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }}
+        .support-text {{
+            font-size: 12px;
+            color: #555;
+            line-height: 1.4;
+        }}
+        .support-text a {{
+            color: #E66239;
+            text-decoration: none;
+        }}
+        .footer {{
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+        }}
+        .button {{
+            display: block;
+            background: {content['color']};
+            color: white;
+            padding: 12px;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 20px 0 10px;
+        }}
+        @media (max-width: 480px) {{
+            .info-row {{
+                flex-direction: column;
+                align-items: flex-start;
+            }}
+            .info-value {{
+                text-align: left;
+                width: 100%;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>{content['icon']} {content['title']}</h1>
+            <p>Order #{order.id}</p>
+        </div>
+        
+        <div class="content-padding">
+            <!-- Status Box -->
+            <div class="status-box">
+                <div class="status-badge">{new_status.upper()}</div>
+                <div class="status-title">{content['title']}</div>
+                <div class="status-message">{content['message']}</div>
+            </div>
+            
+            <!-- Order Info -->
+            <div class="info-box">
+                <div class="info-row">
+                    <span class="info-label">📅 Order Date:</span>
+                    <span class="info-value">{order.created_at.strftime('%b %d, %Y')}</span>
                 </div>
-            </body>
-            </html>
-            '''
+                <div class="info-row">
+                    <span class="info-label">📍 Shipping Address:</span>
+                    <span class="info-value">{order.shipping_address or 'Not provided'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📞 Phone:</span>
+                    <span class="info-value">{order.phone or 'Not provided'}</span>
+                </div>
+            </div>
+            
+            <!-- Order Items -->
+            <div class="section-title">📦 Order Items</div>
+            {items_html}
+            
+            <!-- Price Breakdown -->
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span>Subtotal:</span>
+                    <span>NPR {subtotal:.0f}</span>
+                </div>
+                <div class="price-row">
+                    <span>Shipping Fee:</span>
+                    <span>{shipping_display}</span>
+                </div>
+                <div class="price-row total-row">
+                    <span>Total Amount:</span>
+                    <span style="color: {content['color']};">NPR {order.total_amount:.0f}</span>
+                </div>
+            </div>
+            
+            <!-- Support Box -->
+            <div class="support-box">
+                <div class="support-title">📞 Need Assistance?</div>
+                <div class="support-text">
+                    📧 <a href="mailto:noreply.dhamielectronics@gmail.com">support@dhamielectronics.com</a><br>
+                    📱 +977-9866109958<br>
+                    ⏰ 10:00 AM - 6:00 PM (Sun-Fri)
+                </div>
+            </div>
+            
+            <!-- View Order Button -->
+          
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Dhami Electronics. All rights reserved.</p>
+            <p style="font-size: 10px;">This is an automated message, please do not reply.</p>
+        </div>
+    </div>
+</body>
+</html>'''
+            
             mail.send(msg)
             print(f"Status update email sent to {order.user.email}")
             
@@ -1297,100 +1919,245 @@ def cancel_order(order_id):
 
 
 def send_order_cancellation_notification(order, user):
-    """Send cancellation notification email to admin"""
+    """Send cancellation notification email to admin (mobile-responsive)"""
     try:
-        items_html = ""
-        for item in order.items:
-            product_name = item.product.name if item.product else "Product Unavailable"
-            items_html += f"""
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{product_name}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">{item.quantity}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {item.price:.2f}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {(item.price * item.quantity):.2f}</td>
-            </tr>
-            """
+        # Helper function to truncate long product names
+        def truncate_text(text, max_length=50):
+            if len(text) > max_length:
+                return text[:max_length] + '...'
+            return text
         
         # Calculate shipping info
         subtotal = order.total_amount - calculate_shipping(order.total_amount)
         shipping = calculate_shipping(subtotal)
+        shipping_display = 'FREE' if shipping == 0 else f'NPR {shipping:.0f}'
         
-        # Create shipping display text
-        if shipping == 0:
-            shipping_display = '<span style="color: #10b981; font-weight: bold;">FREE</span>'
-        else:
-            shipping_display = f'NPR {shipping:.2f}'
+        # Build order items HTML
+        items_html = ""
+        for item in order.items:
+            product_name = item.product.name if item.product else "Product Unavailable"
+            truncated_name = truncate_text(product_name, 45)
+            items_html += f'''
+            <div style="padding: 12px 0; border-bottom: 1px solid #e0e0e0;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
+                    <div style="flex: 2; min-width: 150px;">
+                        <div style="font-size: 14px; color: #333; line-height: 1.4; word-wrap: break-word; word-break: break-word;">{truncated_name}</div>
+                        <div style="font-size: 11px; color: #999; margin-top: 4px;">Quantity: {item.quantity}</div>
+                    </div>
+                    <div style="font-weight: 600; color: #dc2626; font-size: 14px; white-space: nowrap;">
+                        NPR {item.price * item.quantity:.0f}
+                    </div>
+                </div>
+            </div>
+            '''
         
         msg = Message(
             f'❌ ORDER CANCELLED #{order.id} - Dhami Electronics', 
             recipients=[ADMIN_EMAIL]
         )
-        msg.html = f'''
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body {{ font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }}
-                .container {{ max-width: 800px; margin: 20px auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
-                .header {{ background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 30px; text-align: center; }}
-                .header h1 {{ margin: 0; font-size: 28px; }}
-                .header p {{ margin: 10px 0 0; opacity: 0.9; }}
-                .content {{ padding: 30px; }}
-                .cancelled-badge {{ background: #fee2e2; color: #dc2626; padding: 8px 16px; border-radius: 50px; display: inline-block; font-weight: bold; }}
-                .order-details {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
-                table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-                th {{ background-color: #dc2626; color: white; padding: 12px; text-align: left; }}
-                td {{ padding: 10px; border-bottom: 1px solid #eee; }}
-                .price-breakdown {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>❌ Order Cancelled</h1>
-                    <p>Order #{order.id} has been cancelled by customer</p>
+        
+        msg.html = f'''<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Order Cancelled - Admin Notification</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 10px;
+            -webkit-font-smoothing: antialiased;
+        }}
+        .email-container {{
+            max-width: 550px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }}
+        @media only screen and (max-width: 600px) {{
+            body {{
+                padding: 0;
+            }}
+            .email-container {{
+                width: 100%;
+                border-radius: 0;
+            }}
+            .content-padding {{
+                padding: 16px !important;
+            }}
+            .header h1 {{
+                font-size: 20px !important;
+            }}
+        }}
+        .header {{
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }}
+        .header h1 {{
+            font-size: 22px;
+            margin: 0;
+        }}
+        .header p {{
+            font-size: 13px;
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }}
+        .content-padding {{
+            padding: 20px;
+        }}
+        .cancelled-badge {{
+            display: inline-block;
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }}
+        .info-box {{
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }}
+        .info-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }}
+        .info-label {{
+            font-weight: 600;
+            color: #555;
+            min-width: 100px;
+        }}
+        .info-value {{
+            color: #333;
+            text-align: right;
+            word-wrap: break-word;
+            word-break: break-word;
+            flex: 1;
+        }}
+        .section-title {{
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0 12px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #f0f0f0;
+        }}
+        .price-breakdown {{
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }}
+        .price-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+        }}
+        .total-row {{
+            border-top: 1px solid #ddd;
+            margin-top: 8px;
+            padding-top: 10px;
+            font-weight: 700;
+            font-size: 15px;
+        }}
+        .footer {{
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+        }}
+        @media (max-width: 480px) {{
+            .info-row {{
+                flex-direction: column;
+                align-items: flex-start;
+            }}
+            .info-value {{
+                text-align: left;
+                width: 100%;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>❌ Order Cancelled</h1>
+            <p>Order #{order.id} has been cancelled by customer</p>
+        </div>
+        
+        <div class="content-padding">
+            <div style="text-align: center;">
+                <div class="cancelled-badge">CANCELLED</div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-row">
+                    <span class="info-label">👤 Customer Name:</span>
+                    <span class="info-value">{user.username}</span>
                 </div>
-                <div class="content">
-                    <div class="cancelled-badge">CANCELLED</div>
-                    
-                    <div class="order-details">
-                        <h3>📋 Customer Information:</h3>
-                        <p><strong>Name:</strong> {user.username}</p>
-                        <p><strong>Email:</strong> {user.email}</p>
-                        <p><strong>Phone:</strong> {order.phone or 'Not provided'}</p>
-                        <p><strong>Order Date:</strong> {order.created_at.strftime('%Y-%m-%d %H:%M:%S')}</p>
-                    </div>
-                    
-                    <h3>📦 Cancelled Items:</h3>
-                    <table style="width:100%; border-collapse: collapse;">
-                        <thead>
-                            <tr><th>Product</th><th>Quantity</th><th>Unit Price</th><th>Total</th></tr>
-                        </thead>
-                        <tbody>{items_html}</tbody>
-                    </table>
-                    
-                    <!-- Price Breakdown -->
-                    <div class="price-breakdown">
-                        <h4 style="margin-bottom: 15px; color: #2c3e50;">💰 Price Breakdown</h4>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                            <span>Subtotal:</span>
-                            <span>NPR {subtotal:.2f}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                            <span>Shipping Fee:</span>
-                            <span>{shipping_display}</span>
-                        </div>
-                        <div style="border-top: 1px solid #dee2e6; margin: 10px 0;"></div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 18px; font-weight: bold;">
-                            <span>Total Amount Cancelled:</span>
-                            <span style="color: #dc2626;">NPR {order.total_amount:.2f}</span>
-                        </div>
-                    </div>
+                <div class="info-row">
+                    <span class="info-label">📧 Email:</span>
+                    <span class="info-value">{user.email}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📞 Phone:</span>
+                    <span class="info-value">{order.phone or 'Not provided'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📅 Order Date:</span>
+                    <span class="info-value">{order.created_at.strftime('%b %d, %Y')}</span>
                 </div>
             </div>
-        </body>
-        </html>
-        '''
+            
+            <div class="section-title">📦 Cancelled Items</div>
+            {items_html}
+            
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span>Subtotal:</span>
+                    <span>NPR {subtotal:.0f}</span>
+                </div>
+                <div class="price-row">
+                    <span>Shipping Fee:</span>
+                    <span>{shipping_display}</span>
+                </div>
+                <div class="price-row total-row">
+                    <span>Total Amount Cancelled:</span>
+                    <span style="color: #dc2626;">NPR {order.total_amount:.0f}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Dhami Electronics. All rights reserved.</p>
+            <p>This is an automated notification for admin</p>
+        </div>
+    </div>
+</body>
+</html>'''
+        
         mail.send(msg)
         print(f"Cancellation notification sent to admin")
         return True
@@ -1400,133 +2167,318 @@ def send_order_cancellation_notification(order, user):
 
 
 def send_cancellation_confirmation_to_customer(order, user):
-    """Send cancellation confirmation email to customer"""
+    """Send cancellation confirmation email to customer (mobile-responsive)"""
     try:
-        items_html = ""
-        for item in order.items:
-            product_name = item.product.name if item.product else "Product Unavailable"
-            items_html += f"""
-            <tr>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd;">{product_name}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">{item.quantity}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {item.price:.2f}</td>
-                <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">NPR {(item.price * item.quantity):.2f}</td>
-            </tr>
-            """
+        # Helper function to truncate long product names
+        def truncate_text(text, max_length=50):
+            if len(text) > max_length:
+                return text[:max_length] + '...'
+            return text
         
         # Calculate shipping info
         subtotal = order.total_amount - calculate_shipping(order.total_amount)
         shipping = calculate_shipping(subtotal)
+        shipping_display = 'FREE' if shipping == 0 else f'NPR {shipping:.0f}'
         
-        # Create shipping display text
-        if shipping == 0:
-            shipping_display = '<span style="color: #10b981; font-weight: bold;"><i class="fas fa-gift"></i> FREE</span>'
-        else:
-            shipping_display = f'NPR {shipping:.2f}'
-        
-        # Customer support section
-        customer_support = f'''
-        <div style="background-color: #f8f7da; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #E66239;">
-            <strong style="color: #E66239;">📞 Need Assistance?</strong><br>
-            <span style="color: #333;">Email: <a href="mailto:support@dhamielectronics.com" style="color: #E66239;">support@dhamielectronics.com</a></span><br>
-            <span style="color: #333;">Phone: +977-9866109958</span><br>
-            <span style="color: #333;">Working Hours: 10:00 AM - 6:00 PM (Sun - Fri)</span>
-        </div>
-        '''
+        # Build order items HTML
+        items_html = ""
+        for item in order.items:
+            product_name = item.product.name if item.product else "Product Unavailable"
+            truncated_name = truncate_text(product_name, 45)
+            items_html += f'''
+            <div style="padding: 12px 0; border-bottom: 1px solid #e0e0e0;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
+                    <div style="flex: 2; min-width: 150px;">
+                        <div style="font-size: 14px; color: #333; line-height: 1.4; word-wrap: break-word; word-break: break-word;">{truncated_name}</div>
+                        <div style="font-size: 11px; color: #999; margin-top: 4px;">Quantity: {item.quantity}</div>
+                    </div>
+                    <div style="font-weight: 600; color: #dc2626; font-size: 14px; white-space: nowrap;">
+                        NPR {item.price * item.quantity:.0f}
+                    </div>
+                </div>
+            </div>
+            '''
         
         msg = Message(
             f'Order #{order.id} Cancelled - Dhami Electronics', 
             recipients=[user.email]
         )
-        msg.html = f'''
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <style>
-                body {{ font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }}
-                .container {{ max-width: 600px; margin: 20px auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }}
-                .header {{ background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 30px; text-align: center; }}
-                .header h1 {{ margin: 0; font-size: 28px; }}
-                .header p {{ margin: 10px 0 0; opacity: 0.9; }}
-                .content {{ padding: 30px; }}
-                .refund-info {{ background: #fef2f2; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626; }}
-                .order-details {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
-                table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
-                th {{ background-color: #dc2626; color: white; padding: 12px; text-align: left; }}
-                td {{ padding: 10px; border-bottom: 1px solid #eee; }}
-                .price-breakdown {{ background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 20px 0; }}
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <h1>❌ Order Cancelled</h1>
-                    <p>Order #{order.id}</p>
+        
+        msg.html = f'''<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Order Cancelled Confirmation</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 10px;
+            -webkit-font-smoothing: antialiased;
+        }}
+        .email-container {{
+            max-width: 550px;
+            width: 100%;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }}
+        @media only screen and (max-width: 600px) {{
+            body {{
+                padding: 0;
+            }}
+            .email-container {{
+                width: 100%;
+                border-radius: 0;
+            }}
+            .content-padding {{
+                padding: 16px !important;
+            }}
+            .header h1 {{
+                font-size: 20px !important;
+            }}
+        }}
+        .header {{
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }}
+        .header h1 {{
+            font-size: 22px;
+            margin: 0;
+        }}
+        .header p {{
+            font-size: 13px;
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }}
+        .content-padding {{
+            padding: 20px;
+        }}
+        .greeting {{
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 15px;
+        }}
+        .info-box {{
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }}
+        .info-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }}
+        .info-label {{
+            font-weight: 600;
+            color: #555;
+            min-width: 100px;
+        }}
+        .info-value {{
+            color: #333;
+            text-align: right;
+            word-wrap: break-word;
+            word-break: break-word;
+            flex: 1;
+        }}
+        .section-title {{
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0 12px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #f0f0f0;
+        }}
+        .price-breakdown {{
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }}
+        .price-row {{
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+        }}
+        .total-row {{
+            border-top: 1px solid #ddd;
+            margin-top: 8px;
+            padding-top: 10px;
+            font-weight: 700;
+            font-size: 15px;
+        }}
+        .refund-box {{
+            background: #fef2f2;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 3px solid #dc2626;
+        }}
+        .refund-title {{
+            font-weight: 600;
+            color: #dc2626;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }}
+        .refund-text {{
+            font-size: 13px;
+            color: #555;
+            line-height: 1.4;
+        }}
+        .support-box {{
+            background: #fff8e1;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 3px solid #E66239;
+        }}
+        .support-title {{
+            font-weight: 600;
+            color: #E66239;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }}
+        .support-text {{
+            font-size: 12px;
+            color: #555;
+            line-height: 1.4;
+        }}
+        .support-text a {{
+            color: #E66239;
+            text-decoration: none;
+        }}
+        .footer {{
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+            font-size: 11px;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+        }}
+        .button {{
+            display: block;
+            background: #dc2626;
+            color: white;
+            padding: 12px;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 20px 0 10px;
+        }}
+        @media (max-width: 480px) {{
+            .info-row {{
+                flex-direction: column;
+                align-items: flex-start;
+            }}
+            .info-value {{
+                text-align: left;
+                width: 100%;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>❌ Order Cancelled</h1>
+            <p>Order #{order.id}</p>
+        </div>
+        
+        <div class="content-padding">
+            <div class="greeting">
+                Dear {user.username},
+            </div>
+            
+            <p style="font-size: 14px; color: #555; margin-bottom: 20px;">
+                Your order has been cancelled as requested.
+            </p>
+            
+            <div class="info-box">
+                <div class="info-row">
+                    <span class="info-label">📋 Order #:</span>
+                    <span class="info-value">{order.id}</span>
                 </div>
-                
-                <div class="content">
-                    <p>Dear {user.username},</p>
-                    <p>Your order has been cancelled as requested.</p>
-                    
-                    <div class="order-details">
-                        <h3>📋 Order Information</h3>
-                        <p><strong>Order #:</strong> {order.id}</p>
-                        <p><strong>Order Date:</strong> {order.created_at.strftime('%Y-%m-%d %H:%M:%S')}</p>
-                        <p><strong>Shipping Address:</strong> {order.shipping_address or 'Not provided'}</p>
-                        <p><strong>Phone:</strong> {order.phone or 'Not provided'}</p>
-                    </div>
-                    
-                    <h3>📦 Cancelled Items:</h3>
-                    <table style="width:100%; border-collapse: collapse;">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Unit Price</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>{items_html}</tbody>
-                    </table>
-                    
-                    <!-- Price Breakdown -->
-                    <div class="price-breakdown">
-                        <h4 style="margin-bottom: 15px; color: #2c3e50;">💰 Price Breakdown</h4>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                            <span>Subtotal:</span>
-                            <span>NPR {subtotal:.2f}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                            <span>Shipping Fee:</span>
-                            <span>{shipping_display}</span>
-                        </div>
-                        <div style="border-top: 1px solid #dee2e6; margin: 10px 0;"></div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 18px; font-weight: bold;">
-                            <span>Total Amount:</span>
-                            <span style="color: #dc2626;">NPR {order.total_amount:.2f}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="refund-info">
-                        <strong>💰 Refund Information:</strong><br>
-                        Your payment of <strong>NPR {order.total_amount:.2f}</strong> will be refunded within 3-5 business days.
-                    </div>
-                    
-                    {customer_support}
-                    
-                    <p style="margin-top: 20px; color: #666; text-align: center;">
-                        Thank you for shopping with Dhami Electronics.
-                    </p>
+                <div class="info-row">
+                    <span class="info-label">📅 Order Date:</span>
+                    <span class="info-value">{order.created_at.strftime('%b %d, %Y')}</span>
                 </div>
-                
-                <div class="footer" style="background-color: #f8f9fa; padding: 20px; text-align: center; color: #6c757d; font-size: 12px;">
-                    <p>&copy; 2026 Dhami Electronics. All rights reserved.</p>
-                    <p>This is an automated message, please do not reply.</p>
+                <div class="info-row">
+                    <span class="info-label">📍 Shipping Address:</span>
+                    <span class="info-value">{order.shipping_address or 'Not provided'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">📞 Phone:</span>
+                    <span class="info-value">{order.phone or 'Not provided'}</span>
                 </div>
             </div>
-        </body>
-        </html>
-        '''
+            
+            <div class="section-title">📦 Cancelled Items</div>
+            {items_html}
+            
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span>Subtotal:</span>
+                    <span>NPR {subtotal:.0f}</span>
+                </div>
+                <div class="price-row">
+                    <span>Shipping Fee:</span>
+                    <span>{shipping_display}</span>
+                </div>
+                <div class="price-row total-row">
+                    <span>Total Amount:</span>
+                    <span style="color: #dc2626;">NPR {order.total_amount:.0f}</span>
+                </div>
+            </div>
+            
+            <div class="refund-box">
+                <div class="refund-title">💰 Refund Information</div>
+                <div class="refund-text">
+                    Your payment of <strong>NPR {order.total_amount:.0f}</strong> will be refunded within 3-5 business days.
+                </div>
+            </div>
+            
+            <div class="support-box">
+                <div class="support-title">📞 Need Assistance?</div>
+                <div class="support-text">
+                    📧 <a href="mailto:noreply.dhamielectronics@gmail.com">support@dhamielectronics.com</a><br>
+                    📱 +977-9866109958<br>
+                    ⏰ 10:00 AM - 6:00 PM (Sun-Fri)
+                </div>
+            </div>
+            
+            <a href="#" class="button">View Order Details →</a>
+            
+            <p style="margin-top: 20px; font-size: 12px; color: #999; text-align: center;">
+                Thank you for shopping with Dhami Electronics.
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Dhami Electronics. All rights reserved.</p>
+            <p style="font-size: 10px;">This is an automated message, please do not reply.</p>
+        </div>
+    </div>
+</body>
+</html>'''
+        
         mail.send(msg)
         print(f"Cancellation confirmation sent to customer: {user.email}")
         return True

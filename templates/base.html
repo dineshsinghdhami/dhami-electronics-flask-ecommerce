@@ -4,9 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Dhami Electronics - Best Electronics Store</title>
+
+        <!-- Standard favicon for most browsers -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <!-- Apple Touch Icon for iOS devices -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <!-- Fallback for older browsers -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/png">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DhamiElect">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon.jpg') }}">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
         /* Make the body take full height */
         html, body {
@@ -23,6 +38,8 @@
             color: #2c3e50;
             padding-top: 76px; /* Add padding to body to prevent content from hiding under fixed navbar */
         }
+
+        
         
         /* Main content should grow to push footer down */
         .main-content {
@@ -369,75 +386,303 @@
             transform: translateY(-3px);
             box-shadow: 0 4px 15px rgba(102,126,234,0.4);
         }
+
+        /* ============================================
+   FIX MOBILE MENU BUTTON SIZE
+   ============================================ */
+@media (max-width: 768px) {
+    /* Fix navbar toggler button */
+    .navbar-toggler {
+        padding: 6px 10px;
+        font-size: 1rem;
+    }
+    
+    .navbar-toggler-icon {
+        width: 22px;
+        height: 22px;
+        font-size: 1rem;
+    }
+    
+    /* If using a custom menu button */
+    .menu-btn,
+    .mobile-menu-btn,
+    .nav-toggle {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+    
+    /* Reduce icon size inside button */
+    .navbar-toggler i,
+    .menu-btn i,
+    .mobile-menu-btn i {
+        font-size: 1.2rem;
+    }
+    
+    /* If button has text */
+    .navbar-toggler span:not(.navbar-toggler-icon) {
+        font-size: 0.8rem;
+    }
+}
+
+/* For extra small devices */
+@media (max-width: 480px) {
+    .navbar-toggler {
+        padding: 4px 8px;
+    }
+    
+    .navbar-toggler-icon {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* ============================================
+   MOBILE NAVBAR - CART BUTTON VISIBLE
+   ============================================ */
+@media (max-width: 992px) {
+    /* Make navbar layout flexible */
+    .navbar .container-fluid {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    /* Keep logo on left */
+    .navbar-brand {
+        order: 1;
+    }
+    
+    /* Move toggler button to right */
+    .navbar-toggler {
+        order: 3;
+        margin-left: auto;
+    }
+    
+    /* Create a container for cart that stays visible */
+    .mobile-cart-container {
+        order: 2;
+        margin-left: auto;
+        margin-right: 15px;
+        display: block;
+    }
+    
+    /* Cart link styling for mobile */
+    .mobile-cart-link {
+        position: relative;
+        display: inline-block;
+        padding: 8px 12px;
+        color: #2c3e50;
+        text-decoration: none;
+        font-size: 1.2rem;
+        background: #f8f9fa;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-cart-link:hover {
+        background: #f39c12;
+        color: white;
+    }
+    
+    .mobile-cart-link .cart-badge-mobile {
+        position: absolute;
+        top: -5px;
+        right: -8px;
+        background-color: #e74c3c;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 10px;
+        font-weight: bold;
+        min-width: 18px;
+        text-align: center;
+    }
+    
+    /* Hide the regular cart link in mobile menu */
+    .navbar-nav .nav-link .fa-shopping-cart {
+        display: none;
+    }
+    
+    /* Keep other nav items in collapse menu */
+    .navbar-collapse {
+        order: 4;
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+
+
+
+/* Hide desktop cart item on mobile */
+@media (max-width: 992px) {
+    .desktop-cart-item {
+        display: none;
+    }
+}
+
+/* Show desktop cart item on desktop */
+@media (min-width: 993px) {
+    .desktop-cart-item {
+        display: block;
+    }
+}
+
+/* For extra small devices */
+@media (max-width: 480px) {
+    .mobile-cart-link {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    
+    .mobile-cart-link .cart-badge-mobile {
+        padding: 1px 5px;
+        font-size: 9px;
+        min-width: 16px;
+    }
+}
+
+/* Desktop - hide mobile cart container */
+@media (min-width: 993px) {
+    .mobile-cart-container {
+        display: none;
+    }
+}
+
+
+
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg">
-        <div class="container-fluid">
-            <!-- Logo - Extreme Left -->
-            <a class="navbar-brand" href="{{ url_for('index') }}">
-                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Dhami Electronics" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x50?text=DE'">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <!-- Logo - Extreme Left -->
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Dhami Electronics" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x50?text=DE'">
+        </a>
+        
+        <!-- Mobile Cart Button - Always Visible -->
+        <div class="mobile-cart-container">
+            <a class="mobile-cart-link" href="{{ url_for('cart') }}">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="mobile-cart-count" class="cart-badge-mobile" style="display: none;">0</span>
             </a>
-            
-            <!-- Mobile Toggler Button -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-           <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav ms-auto">
-
-        <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('index') }}">
-                <i class="fas fa-home me-1"></i> Home
-            </a>
-        </li>
-
-        {% if current_user.is_authenticated %}
-            <li class="nav-item">
-                <a class="nav-link position-relative" href="{{ url_for('cart') }}">
-                    <i class="fas fa-shopping-cart me-1"></i> Cart
-                    <span id="cart-count" class="cart-badge" style="display: none;">0</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('orders') }}">
-                    <i class="fas fa-box me-1"></i> My Orders
-                </a>
-            </li>
-
-            {% if current_user.is_admin %}
+        </div>
+        
+        <!-- Mobile Toggler Button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
-                        <i class="fas fa-user-shield me-1"></i> Admin Panel
+                    <a class="nav-link" href="{{ url_for('index') }}">
+                        <i class="fas fa-home me-1"></i> Home
                     </a>
                 </li>
-            {% endif %}
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('logout') }}">
-                    <i class="fas fa-sign-out-alt me-1"></i> Logout
-                </a>
-            </li>
+                {% if current_user.is_authenticated %}
+                    <!-- Hide this cart link on mobile, show only on desktop -->
+                    <li class="nav-item desktop-cart-item">
+                        <a class="nav-link position-relative" href="{{ url_for('cart') }}">
+                            <i class="fas fa-shopping-cart me-1"></i> Cart
+                            <span id="cart-count" class="cart-badge" style="display: none;">0</span>
+                        </a>
+                    </li>
 
-        {% else %}
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('login') }}">
-                    <i class="fas fa-sign-in-alt me-1"></i> Login
-                </a>
-            </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('orders') }}">
+                            <i class="fas fa-box me-1"></i> My Orders
+                        </a>
+                    </li>
 
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('register') }}">
-                    <i class="fas fa-user-plus me-1"></i> Register
-                </a>
-            </li>
-        {% endif %}
+                    {% if current_user.is_admin %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                                <i class="fas fa-user-shield me-1"></i> Admin Panel
+                            </a>
+                        </li>
+                    {% endif %}
 
-    </ul>
-</div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </a>
+                    </li>
+
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register') }}">
+                            <i class="fas fa-user-plus me-1"></i> Register
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
 </nav>
+
+
+
+<script>
+let deferredPrompt;
+let installBanner = document.getElementById('installBanner');
+let installBtn = document.getElementById('installAppBtn');
+let closeBtn = document.getElementById('closeBannerBtn');
+
+// Listen for the beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 67 and earlier from automatically showing the prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later
+  deferredPrompt = e;
+  // Show the custom install banner
+  installBanner.style.display = 'block';
+});
+
+// Handle install button click
+installBtn.addEventListener('click', async () => {
+  // Hide the banner
+  installBanner.style.display = 'none';
+  // Show the install prompt
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install prompt: ${outcome}`);
+    // Clear the deferred prompt
+    deferredPrompt = null;
+  }
+});
+
+// Handle close button click
+closeBtn.addEventListener('click', () => {
+  installBanner.style.display = 'none';
+});
+
+// Also hide banner if app is already installed
+window.addEventListener('appinstalled', () => {
+  installBanner.style.display = 'none';
+  deferredPrompt = null;
+  console.log('PWA was installed');
+});
+</script>
 
     <!-- Main Content Wrapper -->
     <div class="main-content">
@@ -467,29 +712,33 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     
     <script>
-        // Function to update cart count in navbar
-        function updateCartCount() {
-            $.ajax({
-                url: '/get_cart_count',
-                method: 'GET',
-                success: function(response) {
-                    if (response.count !== undefined) {
-                        var count = response.count;
-                        var $cartBadge = $('#cart-count');
-                        
-                        if (count > 0) {
-                            $cartBadge.text(count);
-                            $cartBadge.show();
-                        } else {
-                            $cartBadge.hide();
-                        }
-                    }
-                },
-                error: function() {
-                    console.log('Error fetching cart count');
+        // Update both desktop and mobile cart counts
+function updateCartCount() {
+    $.ajax({
+        url: '/get_cart_count',
+        method: 'GET',
+        success: function(response) {
+            if (response.count !== undefined) {
+                var count = response.count;
+                var $cartBadge = $('#cart-count');
+                var $mobileCartBadge = $('#mobile-cart-count');
+                
+                if (count > 0) {
+                    $cartBadge.text(count);
+                    $cartBadge.show();
+                    $mobileCartBadge.text(count);
+                    $mobileCartBadge.show();
+                } else {
+                    $cartBadge.hide();
+                    $mobileCartBadge.hide();
                 }
-            });
+            }
+        },
+        error: function() {
+            console.log('Error fetching cart count');
         }
+    });
+}
         
         // Function to add to cart without redirect
         function addToCart(productId) {
@@ -668,6 +917,14 @@
     </script>
     
     {% block scripts %}{% endblock %}
+
+    <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register("{{ url_for('static', filename='sw.js') }}")
+    .then(reg => console.log('Service Worker registered', reg))
+    .catch(err => console.log('Service Worker failed', err));
+}
+</script>
     
 </body>
 </html>
