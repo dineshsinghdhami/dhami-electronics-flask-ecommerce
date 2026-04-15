@@ -55,7 +55,7 @@ All code, designs, email templates, and assets are fully protected and may not b
 dhami-electronics/
 ├── app.py
 ├── static/
-│   └── uploads/          # Product images
+│   └── uploads/          
 ├── templates/
 │   ├── admin/
 │   ├── index.html
