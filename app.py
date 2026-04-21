@@ -2619,15 +2619,10 @@ if __name__ == '__main__':
         else:
             print("✅ Admin user already exists.")
         
-        print("=" * 60)
-        print("✅ Database ready!")
-        print("👤 Admin credentials - Username: dhamielectronics, Password: dhamielectronics")
-        print("📦 Shipping: NPR 150 for orders under NPR 5000")
-        print("🚚 Free shipping for orders above NPR 5000")
-        print("=" * 60)
+
     
     print("\n🚀 Starting Flask server...")
     print("🌐 Visit: http://127.0.0.1:5000")
-    print("=" * 60)
+  
     
     app.run(debug=True)
