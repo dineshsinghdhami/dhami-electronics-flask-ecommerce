@@ -399,7 +399,6 @@ otpInput.addEventListener('paste', function(e) {
     }
 });
 
-// Check for OTP message from session
 {% if session.pop('otp_message', None) %}
     showMessage('{{ session.pop("otp_message") }}', false);
 {% endif %}
