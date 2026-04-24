@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Dhami Electronics - Best Electronics Store</title>
+
+        <!-- Standard favicon for most browsers -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <!-- Apple Touch Icon for iOS devices -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/favicon.png') }}">
+    <!-- Fallback for older browsers -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}" type="image/png">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="DhamiElect">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/icon.jpg') }}">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        /* Make the body take full height */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f8f9fa;
+            color: #2c3e50;
+            padding-top: 76px; /* Add padding to body to prevent content from hiding under fixed navbar */
+        }
+
+        
+        
+        /* Main content should grow to push footer down */
+        .main-content {
+            flex: 1;
+        }
+        
+        /* Navbar - Fixed at top */
+        .navbar {
+            background-color: #ffffff !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 0.5rem 0;
+            margin: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+        
+        .navbar .container-fluid {
+            padding-left: 20px;
+            padding-right: 20px;
+            margin: 0;
+            width: 100%;
+        }
+        
+        /* Navbar brand - stays on extreme left */
+        .navbar-brand {
+            padding: 0;
+            display: flex;
+            align-items: center;
+            margin-right: auto;
+        }
+        
+        .navbar-brand img {
+            height: 50px;
+            width: auto;
+        }
+        
+        /* Navbar collapse - pushes to extreme right */
+        .navbar-collapse {
+            flex-grow: 0;
+        }
+        
+        /* Navbar links - no extra spacing */
+        .navbar-nav {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar-nav .nav-link {
+            color: #2c3e50 !important;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            white-space: nowrap;
+        }
+        
+        .navbar-nav .nav-link:hover {
+            color: #f39c12 !important;
+        }
+        
+        /* Remove default margin from nav items */
+        .navbar-nav .nav-item {
+            margin: 0;
+            padding: 0;
+        }
+        
+        /* Toggler button for mobile */
+        .navbar-toggler {
+            border-color: #2c3e50;
+            margin-left: auto;
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(44, 62, 80, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
+        
+        /* Cart Badge */
+        .cart-icon-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .cart-badge {
+            position: absolute;
+            top: -12px;
+            right: -15px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 11px;
+            font-weight: bold;
+            min-width: 18px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        /* Product Card Styles */
+        .product-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #ffffff;
+            color: #2c3e50;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+        }
+        
+        .product-img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+        
+        .card-title, .card-text {
+            color: #2c3e50;
+        }
+        
+        .card-body {
+            background: #ffffff;
+        }
+        
+        /* Button Styles */
+        .btn-primary {
+            background-color: #3498db;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: #27ae60;
+            border: none;
+        }
+        
+        .btn-success:hover {
+            background-color: #229954;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #2c3e50;
+            color: #ffffff;
+            width: 100%;
+            margin-top: auto;
+        }
+        
+        .footer .footer-container {
+            padding: 20px 20px 15px 20px;
+            margin: 0;
+            width: 100%;
+        }
+        
+        .footer h5 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        
+        .footer p {
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+        
+        .footer ul {
+            margin-bottom: 0;
+        }
+        
+        .footer ul li {
+            margin-bottom: 5px;
+        }
+        
+        .footer ul li a {
+            font-size: 0.85rem;
+        }
+        
+        .footer .fa-2x {
+            font-size: 1.5rem;
+        }
+        
+        .footer .row {
+            align-items: center;
+            margin: 0;
+        }
+        
+        .footer a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer a:hover {
+            color: #f39c12;
+        }
+        
+        /* Alert Styles */
+        .alert {
+            display: none;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            transition: background 0.3s ease;
+        }
+        
+        /* Section Titles */
+        .section-title {
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+            padding-left: 15px;
+        }
+        
+        /* Form Controls */
+        .form-control, .form-select {
+            background-color: #ffffff;
+            color: #2c3e50;
+            border-color: #e0e0e0;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: #ffffff;
+            color: #2c3e50;
+            border-color: #3498db;
+        }
+        
+        /* Table Styles */
+        .table {
+            color: #2c3e50;
+        }
+        
+        .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        /* Modal Styles */
+        .modal-content {
+            background-color: #ffffff;
+            color: #2c3e50;
+        }
+        
+        .modal-header, .modal-footer {
+            border-color: #e0e0e0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .navbar-collapse {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: #ffffff;
+                padding: 1rem;
+                border-radius: 0 0 10px 10px;
+                box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+                z-index: 1000;
+            }
+            
+            .navbar-nav {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .navbar-nav .nav-link {
+                padding: 0.75rem 1rem;
+                text-align: center;
+            }
+            
+            .cart-badge {
+                top: -8px;
+                right: -5px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding-top: 66px; /* Smaller padding for mobile */
+            }
+            
+            .navbar-brand img {
+                height: 40px;
+            }
+            
+            .product-img {
+                height: 150px;
+            }
+            
+            .footer .footer-container {
+                padding: 15px 15px 10px 15px;
+            }
+            
+            .footer .col-md-4 {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            
+            .footer .col-md-4:last-child {
+                margin-bottom: 0;
+            }
+        }
+        
+        /* Scroll to top button */
+        .scroll-top-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .scroll-top-btn.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .scroll-top-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+
+        /* ============================================
+   FIX MOBILE MENU BUTTON SIZE
+   ============================================ */
+@media (max-width: 768px) {
+    /* Fix navbar toggler button */
+    .navbar-toggler {
+        padding: 6px 10px;
+        font-size: 1rem;
+    }
+    
+    .navbar-toggler-icon {
+        width: 22px;
+        height: 22px;
+        font-size: 1rem;
+    }
+    
+    /* If using a custom menu button */
+    .menu-btn,
+    .mobile-menu-btn,
+    .nav-toggle {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+    
+    /* Reduce icon size inside button */
+    .navbar-toggler i,
+    .menu-btn i,
+    .mobile-menu-btn i {
+        font-size: 1.2rem;
+    }
+    
+    /* If button has text */
+    .navbar-toggler span:not(.navbar-toggler-icon) {
+        font-size: 0.8rem;
+    }
+}
+
+/* For extra small devices */
+@media (max-width: 480px) {
+    .navbar-toggler {
+        padding: 4px 8px;
+    }
+    
+    .navbar-toggler-icon {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+/* ============================================
+   MOBILE NAVBAR - CART BUTTON VISIBLE
+   ============================================ */
+@media (max-width: 992px) {
+    /* Make navbar layout flexible */
+    .navbar .container-fluid {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    
+    /* Keep logo on left */
+    .navbar-brand {
+        order: 1;
+    }
+    
+    /* Move toggler button to right */
+    .navbar-toggler {
+        order: 3;
+        margin-left: auto;
+    }
+    
+    /* Create a container for cart that stays visible */
+    .mobile-cart-container {
+        order: 2;
+        margin-left: auto;
+        margin-right: 15px;
+        display: block;
+    }
+    
+    /* Cart link styling for mobile */
+    .mobile-cart-link {
+        position: relative;
+        display: inline-block;
+        padding: 8px 12px;
+        color: #2c3e50;
+        text-decoration: none;
+        font-size: 1.2rem;
+        background: #f8f9fa;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .mobile-cart-link:hover {
+        background: #f39c12;
+        color: white;
+    }
+    
+    .mobile-cart-link .cart-badge-mobile {
+        position: absolute;
+        top: -5px;
+        right: -8px;
+        background-color: #e74c3c;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 10px;
+        font-weight: bold;
+        min-width: 18px;
+        text-align: center;
+    }
+    
+    /* Hide the regular cart link in mobile menu */
+    .navbar-nav .nav-link .fa-shopping-cart {
+        display: none;
+    }
+    
+    /* Keep other nav items in collapse menu */
+    .navbar-collapse {
+        order: 4;
+        width: 100%;
+        margin-top: 10px;
+    }
+}
+
+
+
+/* Hide desktop cart item on mobile */
+@media (max-width: 992px) {
+    .desktop-cart-item {
+        display: none;
+    }
+}
+
+/* Show desktop cart item on desktop */
+@media (min-width: 993px) {
+    .desktop-cart-item {
+        display: block;
+    }
+}
+
+/* For extra small devices */
+@media (max-width: 480px) {
+    .mobile-cart-link {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+    
+    .mobile-cart-link .cart-badge-mobile {
+        padding: 1px 5px;
+        font-size: 9px;
+        min-width: 16px;
+    }
+}
+
+/* Desktop - hide mobile cart container */
+@media (min-width: 993px) {
+    .mobile-cart-container {
+        display: none;
+    }
+}
+
+
+
+    </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <!-- Logo - Extreme Left -->
+        <a class="navbar-brand" href="{{ url_for('index') }}">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Dhami Electronics" onerror="this.onerror=null; this.src='https://via.placeholder.com/150x50?text=DE'">
+        </a>
+        
+        <!-- Mobile Cart Button - Always Visible -->
+        <div class="mobile-cart-container">
+            <a class="mobile-cart-link" href="{{ url_for('cart') }}">
+                <i class="fas fa-shopping-cart"></i>
+                <span id="mobile-cart-count" class="cart-badge-mobile" style="display: none;">0</span>
+            </a>
+        </div>
+        
+        <!-- Mobile Toggler Button -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">
+                        <i class="fas fa-home me-1"></i> Home
+                    </a>
+                </li>
+
+                {% if current_user.is_authenticated %}
+                    <!-- Hide this cart link on mobile, show only on desktop -->
+                    <li class="nav-item desktop-cart-item">
+                        <a class="nav-link position-relative" href="{{ url_for('cart') }}">
+                            <i class="fas fa-shopping-cart me-1"></i> Cart
+                            <span id="cart-count" class="cart-badge" style="display: none;">0</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('orders') }}">
+                            <i class="fas fa-box me-1"></i> My Orders
+                        </a>
+                    </li>
+
+                    {% if current_user.is_admin %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                                <i class="fas fa-user-shield me-1"></i> Admin Panel
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </a>
+                    </li>
+
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register') }}">
+                            <i class="fas fa-user-plus me-1"></i> Register
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+
+<script>
+let deferredPrompt;
+let installBanner = document.getElementById('installBanner');
+let installBtn = document.getElementById('installAppBtn');
+let closeBtn = document.getElementById('closeBannerBtn');
+
+// Listen for the beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+  // Prevent Chrome 67 and earlier from automatically showing the prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later
+  deferredPrompt = e;
+  // Show the custom install banner
+  installBanner.style.display = 'block';
+});
+
+// Handle install button click
+installBtn.addEventListener('click', async () => {
+  // Hide the banner
+  installBanner.style.display = 'none';
+  // Show the install prompt
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install prompt: ${outcome}`);
+    // Clear the deferred prompt
+    deferredPrompt = null;
+  }
+});
+
+// Handle close button click
+closeBtn.addEventListener('click', () => {
+  installBanner.style.display = 'none';
+});
+
+// Also hide banner if app is already installed
+window.addEventListener('appinstalled', () => {
+  installBanner.style.display = 'none';
+  deferredPrompt = null;
+  console.log('PWA was installed');
+});
+</script>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-content">
+       
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" data-flash-message data-type="{{ category }}" data-message="{{ message }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top-btn" id="scrollTopBtn">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        // Update both desktop and mobile cart counts
+function updateCartCount() {
+    $.ajax({
+        url: '/get_cart_count',
+        method: 'GET',
+        success: function(response) {
+            if (response.count !== undefined) {
+                var count = response.count;
+                var $cartBadge = $('#cart-count');
+                var $mobileCartBadge = $('#mobile-cart-count');
+                
+                if (count > 0) {
+                    $cartBadge.text(count);
+                    $cartBadge.show();
+                    $mobileCartBadge.text(count);
+                    $mobileCartBadge.show();
+                } else {
+                    $cartBadge.hide();
+                    $mobileCartBadge.hide();
+                }
+            }
+        },
+        error: function() {
+            console.log('Error fetching cart count');
+        }
+    });
+}
+        
+        // Function to add to cart without redirect
+        function addToCart(productId) {
+            $.ajax({
+                url: '/add_to_cart_ajax/' + productId,
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        updateCartCount();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Added to Cart!',
+                            text: response.message,
+                            confirmButtonColor: '#28a745',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: response.message,
+                            confirmButtonColor: '#dc3545'
+                        });
+                    }
+                },
+                error: function(xhr) {
+                    var message = 'Error adding to cart';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: message,
+                        confirmButtonColor: '#dc3545'
+                    });
+                }
+            });
+        }
+        
+        // SweetAlert2 Popup Function for Flash Messages
+        function showSweetAlert(type, message) {
+            let title = '';
+            let iconColor = '';
+            let iconType = '';
+            
+            switch(type) {
+                case 'success':
+                    title = 'Success!';
+                    iconColor = '#28a745';
+                    iconType = 'success';
+                    break;
+                case 'danger':
+                    title = 'Error!';
+                    iconColor = '#dc3545';
+                    iconType = 'error';
+                    break;
+                case 'warning':
+                    title = 'Warning!';
+                    iconColor = '#ffc107';
+                    iconType = 'warning';
+                    break;
+                case 'info':
+                    title = 'Information';
+                    iconColor = '#3498db';
+                    iconType = 'info';
+                    break;
+                default:
+                    title = 'Notification';
+                    iconColor = '#3498db';
+                    iconType = 'info';
+            }
+            
+            Swal.fire({
+                icon: iconType,
+                title: title,
+                text: message,
+                confirmButtonColor: iconColor,
+                confirmButtonText: 'OK',
+                showConfirmButton: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                backdrop: true,
+                width: '350px',
+                padding: '1.2rem',
+                font: '14px',
+                background: '#ffffff',
+                color: '#2c3e50'
+            });
+        }
+        
+        // Convert flash messages to SweetAlert popups
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('[data-flash-message]');
+            
+            if (flashMessages.length > 0) {
+                let currentIndex = 0;
+                
+                function showNextPopup() {
+                    if (currentIndex < flashMessages.length) {
+                        const alert = flashMessages[currentIndex];
+                        const type = alert.getAttribute('data-type');
+                        const message = alert.getAttribute('data-message');
+                        
+                        Swal.fire({
+                            icon: type === 'danger' ? 'error' : type,
+                            title: type === 'success' ? 'Success!' : type === 'danger' ? 'Error!' : type === 'warning' ? 'Warning!' : 'Information',
+                            text: message,
+                            confirmButtonColor: type === 'success' ? '#28a745' : type === 'danger' ? '#dc3545' : '#3498db',
+                            confirmButtonText: 'OK',
+                            showConfirmButton: true,
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            backdrop: true,
+                            width: '350px',
+                            padding: '1rem',
+                            font: '14px',
+                            background: '#ffffff',
+                            color: '#2c3e50'
+                        }).then(() => {
+                            currentIndex++;
+                            showNextPopup();
+                        });
+                    }
+                }
+                
+                showNextPopup();
+            }
+            
+            // Initial cart count load
+            {% if current_user.is_authenticated %}
+                updateCartCount();
+            {% endif %}
+            
+            // Scroll to top button functionality
+            const scrollBtn = document.getElementById('scrollTopBtn');
+            
+            window.addEventListener('scroll', function() {
+                if (window.scrollY > 300) {
+                    scrollBtn.classList.add('show');
+                } else {
+                    scrollBtn.classList.remove('show');
+                }
+            });
+            
+            scrollBtn.addEventListener('click', function() {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Add custom CSS to make SweetAlert smaller
+        const style = document.createElement('style');
+        style.textContent = `
+    .swal2-popup {
+        font-size: 14px !important;
+        width: 350px !important;
+        border-radius: 20px !important; /* 🔥 ADD THIS */
+    }
+
+    .swal2-title {
+        font-size: 20px !important;
+        padding: 0 0 10px 0 !important;
+    }
+
+    .swal2-confirm {
+        padding: 6px 20px !important;
+        font-size: 13px !important;
+        border-radius: 10px !important; /* 🔥 Rounded button */
+    }
+`;
+        document.head.appendChild(style);
+    </script>
+    
+    {% block scripts %}{% endblock %}
+
+    <script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register("{{ url_for('static', filename='sw.js') }}")
+    .then(reg => console.log('Service Worker registered', reg))
+    .catch(err => console.log('Service Worker failed', err));
+}
+</script>
+    
+</body>
+</html>
